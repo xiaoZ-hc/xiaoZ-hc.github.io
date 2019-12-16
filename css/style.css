@@ -54,21 +54,6 @@ a:focus {
 div {
   box-sizing: border-box; }
 
-.stoc-article {
-  padding: 0.7em 0.7em 0 0; }
-
-#stoc {
-  line-height: 1em; }
-  #stoc .toc {
-    padding: 0;
-    margin: 0.5em;
-    line-height: 1.8em; }
-    #stoc .toc li {
-      list-style-type: none; }
-  #stoc .toc-child {
-    margin-left: 1em;
-    padding-left: 0; }
-
 #header {
   padding: 58px 0 0;
   text-align: left;
