@@ -16,7 +16,7 @@
 <li>短消息或长消息优化设计</li>
 </ul>
 <h2 id="杂凑函数输入输出">杂凑函数输入输出</h2>
-<p><img src="/images/hashyuanli.png" alt=""></p>
+<p><img src="/image/hashyuanli.png" alt=""></p>
 <p>函数输入：</p>
 <ul>
 <li>输入长度以bit计算</li>
@@ -33,7 +33,7 @@
 <p>对于杂凑函数，目前最常见的为两种，分别为Merkle Damgard结构和海绵结构，其核心思想都在于尽可能将数据原文中的信息扩散到hash值中。</p>
 <h3 id="Merkle-Damgard结构">Merkle Damgard结构</h3>
 <p>算法流程：</p>
-<p><img src="/images/merkledamgard.png" alt=""></p>
+<p><img src="/image/merkledamgard.png" alt=""></p>
 <ol>
 <li>把消息划分为n个消息块</li>
 <li>对最后一个消息块做长度填充</li>
@@ -52,7 +52,7 @@
 <li>挤出阶段（squeezing phase）：产生一个固定长度的输出</li>
 </ul>
 <p>假设输入为x，核心处理函数为f,则其流程分为以下几步：</p>
-<p><img src="/images/sponge.png" alt=""></p>
+<p><img src="/image/sponge.png" alt=""></p>
 <ol>
 <li>对输入串x做padding，使其长度能被r整除，将padding后分割成长度为r的块，即x=x_0||x_1||x_2||…||x_t-1。</li>
 <li>初始化一个长度为r+c bit的全零向量。</li>
@@ -64,7 +64,7 @@
 <h2 id="MD5杂凑函数">MD5杂凑函数</h2>
 <p>MD5是使用最为广泛的杂凑函数之一，其由Ron Rivest设计，在此之前有MD2 MD4，而MD5则是在RFC1321中被提出，使用Merkle Damgard结构，后续成为使用最广泛的哈希算法，其哈希长度为128bits，主要攻击方法为爆破和密码分析。</p>
 <h3 id="MD5算法流程">MD5算法流程</h3>
-<p><img src="/images/md5.png" alt=""></p>
+<p><img src="/image/md5.png" alt=""></p>
 <p>将输入信息text的位数按照特定的方法填充至512的整数倍，然后每512位为一个分组M[i]进行处理。每个分组又将分为16个32位的子分组，经过一系列循环后将产4个32位的散列值a, b, c, d，作为下一个分组的输入。最终，将a, b, c, d组合起来即可得到text的MD5值。</p>
 <p>其算法流程如下：</p>
 <ol>
@@ -209,7 +209,7 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 </ul>
 <h3 id="SHA-1算法流程">SHA-1算法流程</h3>
 <p>SHA-1算法中，填充时第一位填1，其他填0，再将长度附到后面，此时明文长度为512的倍数，按照512划分分组，分别表示为Yi，然后对于每个分组进行处理。其预处理和MD5类似，区别主要在于后续的分组处理，在此也只对预处理后的步骤进行介绍：</p>
-<p><img src="/images/sha1.png" alt=""></p>
+<p><img src="/image/sha1.png" alt=""></p>
 <p>每个512位分组划分为16个小分组Mi，将16个小分组扩充为80份小分组，记为Wi，扩充方法为：</p>
 <p>  Wt = Mt , 当0≤t≤15<br/><br>
   Wt = (Wt-3⊕Wt-8⊕Wt-14⊕Wt-16)&lt;&lt;&lt;1, 当16≤t≤79</p>
@@ -328,9 +328,9 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 <h2 id="杂凑函数安全性">杂凑函数安全性</h2>
 <p>如果不存在设计缺陷，根据杂凑函数的三大性质，函数的安全性取决于输出哈希值的位长度。假设给定一个长度为m的杂凑函数，攻击者至少需要爆破2^(m/2)次，这是利用生日攻击进行推导得出，具体推导过程这里不详细阐述，提供<a href="https://www.ruanyifeng.com/blog/2018/09/hash-collision-and-birthday-attack.html" target="_blank" rel="noopener">一个参考</a></p>
 <p>由生日攻击可得，假设哈希空间大小为N，则只要计算 （π/2*N）^1/2 ，就有50%的可能性产生碰撞，假设N为365，按照公式计算出为23.9，其概率如下图：</p>
-<p><img src="/images/shengri.png" alt=""></p>
+<p><img src="/image/shengri.png" alt=""></p>
 <p>由生日攻击可得，哈希碰撞所需耗费的计算次数，和取值空间的平方根是一个数量级。假设d为哈希空间大小，n为当前碰撞次数，则当前碰撞成功的概率计算公式为：</p>
-<p><img src="/images/gongshi.png" alt=""></p>
+<p><img src="/image/gongshi.png" alt=""></p>
 <p>由公式可得，假设哈希值为m位，则攻击者准备2^m/2次方信息X生成hash，2^m/2次方信息Y生成hash，则找到hash(X)=hash(Y)的概率为50%。</p>
 <h2 id="杂凑函数应用">杂凑函数应用</h2>
 <h3 id="在密码系统中的应用">在密码系统中的应用</h3>
@@ -352,7 +352,7 @@ DHT寻址和存储过程：<br/><br>
 通过DHT数据结构它把KEY和 VALUE用某种方式对应起来。使用hash()函数把一个KEY值映射到一个index上：hash(KEY) = index。这样就可以把一个KEY值同某个index对应起来。然后把与这个KEY值对应的VALUE存储到index所标记的存储空间中。这样，每次想要查找KEY所对应的VALUE值时，只需要做一次hash()运算就可以找到了。以上就是寻址过程。<br/><br>
 这里的hash函数为一个一致性哈希函数，假设存储空间地址可以以 0-2^32-1 表示，则该一致性函数即将key值hash成一个index值，index值即为空间地址，以此就可以按照index value进行存储和寻址。<br/></li>
 </ol>
-<p><img src="/images/dht.png" alt=""></p>
+<p><img src="/image/dht.png" alt=""></p>
 <ol start="4">
 <li>密码存储保护：在文档加密和磁盘加密中，加密算法要求使用相同长度的密钥，要求将不同长度的密码转为相同长度，因此可以使用hash函数，先将passwd哈希为密钥，再以这一密钥进行文档的加密。</li>
 <li>服务器端密码保护：在服务器端存储密码时，使用哈希的方式存储</li>
