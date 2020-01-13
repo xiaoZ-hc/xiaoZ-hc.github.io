@@ -1,6 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>密码学学习—密码杂凑函数 | xiaoZ's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><meta name="generator" content="Hexo 4.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">密码学学习—密码杂凑函数</h1><a id="logo" href="/.">xiaoZ's Blog</a><p class="description">Try My Best</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">密码学学习—密码杂凑函数</h1><div class="post-meta">Oct 12, 2019<span> | </span><span class="category"><a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">Contents</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">1.</span> <span class="toc-text">密码杂凑函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#简介"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#杂凑函数输入输出"><span class="toc-number">1.2.</span> <span class="toc-text">杂凑函数输入输出</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#杂凑函数结构"><span class="toc-number">1.3.</span> <span class="toc-text">杂凑函数结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Merkle-Damgard结构"><span class="toc-number">1.3.1.</span> <span class="toc-text">Merkle Damgard结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#海绵（sponge）结构"><span class="toc-number">1.3.2.</span> <span class="toc-text">海绵（sponge）结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MD5杂凑函数"><span class="toc-number">1.4.</span> <span class="toc-text">MD5杂凑函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MD5算法流程"><span class="toc-number">1.4.1.</span> <span class="toc-text">MD5算法流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SHA-1杂凑函数"><span class="toc-number">1.5.</span> <span class="toc-text">SHA-1杂凑函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SHA-1算法流程"><span class="toc-number">1.5.1.</span> <span class="toc-text">SHA-1算法流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常见杂凑函数对比"><span class="toc-number">1.6.</span> <span class="toc-text">常见杂凑函数对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#杂凑函数安全性"><span class="toc-number">1.7.</span> <span class="toc-text">杂凑函数安全性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#杂凑函数应用"><span class="toc-number">1.8.</span> <span class="toc-text">杂凑函数应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#在密码系统中的应用"><span class="toc-number">1.8.1.</span> <span class="toc-text">在密码系统中的应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#其它应用"><span class="toc-number">1.8.2.</span> <span class="toc-text">其它应用</span></a></li></ol></li></ol></li></ol></div></div><div class="post-content"><p>一开学专业课就是密码学，意料之中，但是在课程进行中发现和本科时候学的密码学还是有所区别的，而且自己也已经很多不记得了，趁有空，把一些密码学的东西总结下，也算是对之前内容的复习和对现在正上着的课程的预习了。因为密码学是一门大学科，也没打算将所有的东西都弄懂，能够把一些常用的东西理清楚其实就很不错了，而这一篇主要是对密码杂凑函数的一些总结和概述。</p>
-<h1>密码杂凑函数</h1>
-<h2 id="简介">简介</h2>
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>密码学学习—密码杂凑函数 | xiaoZ's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><meta name="generator" content="Hexo 4.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">密码学学习—密码杂凑函数</h1><a id="logo" href="/.">xiaoZ's Blog</a><p class="description">Try My Best</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">密码学学习—密码杂凑函数</h1><div class="post-meta">Oct 12, 2019<span> | </span><span class="category"><a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">Contents</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">2.</span> <span class="toc-text">杂凑函数输入输出</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">3.</span> <span class="toc-text">杂凑函数结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Merkle-Damgard结构"><span class="toc-number">3.1.</span> <span class="toc-text">Merkle Damgard结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#海绵（sponge）结构"><span class="toc-number">3.2.</span> <span class="toc-text">海绵（sponge）结构</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">4.</span> <span class="toc-text">MD5杂凑函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MD5算法流程"><span class="toc-number">4.1.</span> <span class="toc-text">MD5算法流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SHA-1杂凑函数"><span class="toc-number">4.2.</span> <span class="toc-text">SHA-1杂凑函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SHA-1算法流程"><span class="toc-number">4.3.</span> <span class="toc-text">SHA-1算法流程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">5.</span> <span class="toc-text">常见杂凑函数对比</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">6.</span> <span class="toc-text">杂凑函数安全性</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#null"><span class="toc-number">7.</span> <span class="toc-text">杂凑函数应用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#在密码系统中的应用"><span class="toc-number">7.1.</span> <span class="toc-text">在密码系统中的应用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它应用"><span class="toc-number">7.2.</span> <span class="toc-text">其它应用</span></a></li></ol></li></ol></div></div><div class="post-content"><p>一开学专业课就是密码学，意料之中，但是在课程进行中发现和本科时候学的密码学还是有所区别的，而且自己也已经很多不记得了，趁有空，把一些密码学的东西总结下，也算是对之前内容的复习和对现在正上着的课程的预习了。因为密码学是一门大学科，也没打算将所有的东西都弄懂，能够把一些常用的东西理清楚其实就很不错了，而这一篇主要是对密码杂凑函数的一些总结和概述。</p>
+<h1>简介</h1>
 <p>先引用维基上对于杂凑函数的介绍：“密码散列函数（英语：Cryptographic hash function），又译为加密散列函数、密码散列函数、加密散列函数，是散列函数的一种。它被认为是一种单向函数，也就是说极其难以由散列函数输出的结果，回推输入的数据是什么。这样的单向函数被称为“现代密码学的驮马”。这种散列函数的输入数据，通常被称为消息（message），而它的输出结果，经常被称为消息摘要（message digest）或摘要（digest）。”</p>
 <p>简单来说，杂凑函数就是一种单向函数，由输入计算得出结果容易，但是理论上由输出结果计算输入是困难的，另外，杂凑函数也叫hash函数、散列函数等。另外，杂凑函数需符合以下性质：</p>
 <ul>
@@ -15,7 +14,7 @@
 <li>哈希函数的计算速度应该和磁盘IO相当</li>
 <li>短消息或长消息优化设计</li>
 </ul>
-<h2 id="杂凑函数输入输出">杂凑函数输入输出</h2>
+<h1>杂凑函数输入输出</h1>
 <p><img src="/image/hashyuanli.png" alt=""></p>
 <p>函数输入：</p>
 <ul>
@@ -29,9 +28,9 @@
 <li>一般输出长度为128/160/256/512位(不同函数)</li>
 <li>同一类哈希函数的算法相似，输出长度和参数不同（比如salt）</li>
 </ul>
-<h2 id="杂凑函数结构">杂凑函数结构</h2>
+<h1>杂凑函数结构</h1>
 <p>对于杂凑函数，目前最常见的为两种，分别为Merkle Damgard结构和海绵结构，其核心思想都在于尽可能将数据原文中的信息扩散到hash值中。</p>
-<h3 id="Merkle-Damgard结构">Merkle Damgard结构</h3>
+<h2 id="Merkle-Damgard结构">Merkle Damgard结构</h2>
 <p>算法流程：</p>
 <p><img src="/image/merkledamgard.png" alt=""></p>
 <ol>
@@ -45,7 +44,7 @@
 <li>知道密文secret的长度</li>
 <li>知道一个密文secret的hash值</li>
 </ul>
-<h3 id="海绵（sponge）结构">海绵（sponge）结构</h3>
+<h2 id="海绵（sponge）结构">海绵（sponge）结构</h2>
 <p>海绵结构能够进行数据转换，将任意长的输入转换成任意长的输出。在使用海绵结构前，需要进行预处理，预处理会将数据进行分块，分成大小相同的块，在预处理后，海绵结构主要分为以下两部分：</p>
 <ul>
 <li>吸入阶段（absorbing phase）：将块x_i传入算法并处理。</li>
@@ -61,9 +60,9 @@
 <li>输出长为r的块作为y_0，并将向量输入到f函数中处理，输出y_1，以此类推。得到的Hash序列即为y=y_0||y_1||y_2||…||y_u。对于对应不同输出长度的杂凑函数，只需要在y_0中取出对应长度的前缀即可。</li>
 </ol>
 <p>对于海绵结构，一些较新的杂凑函数，如SHA-3算法等，使用的就是这一结构。</p>
-<h2 id="MD5杂凑函数">MD5杂凑函数</h2>
+<h1>MD5杂凑函数</h1>
 <p>MD5是使用最为广泛的杂凑函数之一，其由Ron Rivest设计，在此之前有MD2 MD4，而MD5则是在RFC1321中被提出，使用Merkle Damgard结构，后续成为使用最广泛的哈希算法，其哈希长度为128bits，主要攻击方法为爆破和密码分析。</p>
-<h3 id="MD5算法流程">MD5算法流程</h3>
+<h2 id="MD5算法流程">MD5算法流程</h2>
 <p><img src="/image/md5.png" alt=""></p>
 <p>将输入信息text的位数按照特定的方法填充至512的整数倍，然后每512位为一个分组M[i]进行处理。每个分组又将分为16个32位的子分组，经过一系列循环后将产4个32位的散列值a, b, c, d，作为下一个分组的输入。最终，将a, b, c, d组合起来即可得到text的MD5值。</p>
 <p>其算法流程如下：</p>
@@ -130,7 +129,7 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 <li>速度：两种方法都是主要考虑以32位处理器为基础的系统结构。但SHA1的运算步骤比MD5多了16步，而且SHA1记录单元的长度比MD5多了32位。因此若是以硬件来实现SHA1，其速度大约比MD5慢了25％。</li>
 <li>简易性：两种方法都是相当的简单，在实现上不需要很复杂的程序或是大量存储空间。然而总体上来讲，SHA1对每一步骤的操作描述比MD5简单。</li>
 </ul>
-<h3 id="SHA-1算法流程">SHA-1算法流程</h3>
+<h2 id="SHA-1算法流程">SHA-1算法流程</h2>
 <p>SHA-1算法中，填充时第一位填1，其他填0，再将长度附到后面，此时明文长度为512的倍数，按照512划分分组，分别表示为Yi，然后对于每个分组进行处理。其预处理和MD5类似，区别主要在于后续的分组处理，在此也只对预处理后的步骤进行介绍：</p>
 <p><img src="/image/sha1.png" alt=""></p>
 <p>每个512位分组划分为16个小分组Mi，将16个小分组扩充为80份小分组，记为Wi，扩充方法为：</p>
@@ -170,7 +169,7 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
   D = 0x98BADCFE<br>
   E = 0x10325476</p>
 <p>按照这种方法，将80个步骤进行完毕。第四轮最后一个步骤的A，B，C，D，E输出，将分别与记录单元A′，B′，C′，D′，E′中的数值求和运算。其结果将作为输入成为下一个512位明文分组的链接变量A，B，C，D，E，当最后一个明文分组计算完成以后，A，B，C，D，E中的数据就是最后散列函数值。</p>
-<h2 id="常见杂凑函数对比">常见杂凑函数对比</h2>
+<h1>常见杂凑函数对比</h1>
 <p>目前流行的 Hash 算法包括 MD5、SHA-1 和 SHA-2。</p>
 <ul>
 <li>MD4（RFC 1320）是 MIT 的 Ronald L. Rivest 在 1990 年设计的，MD 是 Message Digest 的缩写。其输出为 128 位。MD4 已证明不够安全。</li>
@@ -248,15 +247,15 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 </tr>
 </tbody>
 </table>
-<h2 id="杂凑函数安全性">杂凑函数安全性</h2>
+<h1>杂凑函数安全性</h1>
 <p>如果不存在设计缺陷，根据杂凑函数的三大性质，函数的安全性取决于输出哈希值的位长度。假设给定一个长度为m的杂凑函数，攻击者至少需要爆破2^(m/2)次，这是利用生日攻击进行推导得出，具体推导过程这里不详细阐述，提供<a href="https://www.ruanyifeng.com/blog/2018/09/hash-collision-and-birthday-attack.html" target="_blank" rel="noopener">一个参考</a></p>
 <p>由生日攻击可得，假设哈希空间大小为N，则只要计算 （π/2*N）^1/2 ，就有50%的可能性产生碰撞，假设N为365，按照公式计算出为23.9，其概率如下图：</p>
 <p><img src="/image/shengri.png" alt=""></p>
 <p>由生日攻击可得，哈希碰撞所需耗费的计算次数，和取值空间的平方根是一个数量级。假设d为哈希空间大小，n为当前碰撞次数，则当前碰撞成功的概率计算公式为：</p>
 <p><img src="/image/gongshi.png" alt=""></p>
 <p>由公式可得，假设哈希值为m位，则攻击者准备2^m/2次方信息X生成hash，2^m/2次方信息Y生成hash，则找到hash(X)=hash(Y)的概率为50%。</p>
-<h2 id="杂凑函数应用">杂凑函数应用</h2>
-<h3 id="在密码系统中的应用">在密码系统中的应用</h3>
+<h1>杂凑函数应用</h1>
+<h2 id="在密码系统中的应用">在密码系统中的应用</h2>
 <ol>
 <li>密钥导出</li>
 <li>消息认证码</li>
@@ -264,7 +263,7 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 <li>将公钥密码机制转为CCA安全机制</li>
 <li>构造伪随机数生成器</li>
 </ol>
-<h3 id="其它应用">其它应用</h3>
+<h2 id="其它应用">其它应用</h2>
 <ol>
 <li>文件校验：使用杂凑函数计算文件哈希值作为文件完整性的校验值，检查文件是否被更改。</li>
 <li>内容标识符：使用杂凑函数作为数据指纹，判断数据是否可信</li>
