@@ -81,97 +81,20 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 进入hash循环运算，循环次数为明文信息的分组数N+1<br>
 每次循环运算分为4轮，每轮使用不同的函数计算，设其实的512位分组为M，则将其划分为16*32，即16个小分组，在4轮循环中，需要进行对应这16个小分组的16次运算，4轮结束后，将循环后的a,b,c,d值加到A,B,C,D上即得新一轮的链接变量，当所有512位分组都循环结束后，此时的A,B,C,D值即为哈希值。其涉及4个计算公式如下：</li>
 </ol>
-<p>  F(X,Y,Z) =(X&amp;Y)|((~X)&amp;Z)<br/><br>
-  G(X,Y,Z) =(X&amp;Z)|(Y&amp;(~Z))<br/><br>
-  H(X,Y,Z) =X^Y^Z<br/><br>
-  I(X,Y,Z)=Y^(X|(~Z))<br/><br>
-  （&amp;是与，|是或，~是非，^是异或）<br/></p>
+<p>  F(X,Y,Z) =(X&amp;Y)|((~X)&amp;Z)<br>
+  G(X,Y,Z) =(X&amp;Z)|(Y&amp;(~Z))<br>
+  H(X,Y,Z) =X^Y^Z<br>
+  I(X,Y,Z)=Y^(X|(~Z))<br>
+  （&amp;是与，|是或，~是非，^是异或）</p>
 <p>函数说明：</p>
 <p>如果X、Y和Z的对应位是独立和均匀的，那么结果的每一位也应是独立和均匀的。<br/><br>
 假设M[j]表示消息的第j个子分组（从0到15），常数ti是4294967296*abs(sin(i))的整数部分，i取值从1到64。</p>
-<p>  F(a, b, c, d, M[j], s, ti)  表示 a = b + ((a + F(b, c, d) + Mj + ti) &lt;&lt;&lt; s)<br/><br>
-  GG(a, b, c, d, M[j], s, ti) 表示 a = b + ((a + G(b, c, d) + Mj + ti) &lt;&lt;&lt; s)<br/><br>
-  HH(a, b, c, d, M[j], s, ti) 表示 a = b + ((a + H(b, c, d) + Mj + ti) &lt;&lt;&lt; s)<br/><br>
-  II(a, b, c, d, M[j], s, ti) 表示 a = b + ((a + I(b, c, d) + Mj + ti) &lt;&lt;&lt; s)<br/></p>
+<p>  F(a, b, c, d, M[j], s, ti)  表示 a = b + ((a + F(b, c, d) + Mj + ti) &lt;&lt;&lt; s)<br>
+  GG(a, b, c, d, M[j], s, ti) 表示 a = b + ((a + G(b, c, d) + Mj + ti) &lt;&lt;&lt; s)<br>
+  HH(a, b, c, d, M[j], s, ti) 表示 a = b + ((a + H(b, c, d) + Mj + ti) &lt;&lt;&lt; s)<br>
+  II(a, b, c, d, M[j], s, ti) 表示 a = b + ((a + I(b, c, d) + Mj + ti) &lt;&lt;&lt; s)</p>
 <p>在每次循环中，其循环分为4轮，可用下列公式表示：</p>
-<pre><code>   	a = A; b = B; c = C; d = D;
-   	//对M[j]的第一轮循环
-    FF(a,b,c,d,M[0],7,0xd76aa478);
-    FF(d,a,b,c,M[1],12,0xe8c7b756);
-    FF(c,d,a,b,M[2],17,0x242070db);
-    FF(b,c,d,a,M[3],22,0xc1bdceee);
-    FF(a,b,c,d,M[4],7,0xf57c0faf);
-    FF(d,a,b,c,M[5],12,0x4787c62a);
-    FF(c,d,a,b,M[6],17,0xa8304613);
-    FF(b,c,d,a,M[7],22,0xfd469501) ;
-    FF(a,b,c,d,M[8],7,0x698098d8) ;
-    FF(d,a,b,c,M[9],12,0x8b44f7af) ;
-    FF(c,d,a,b,M[10],17,0xffff5bb1) ;
-    FF(b,c,d,a,M[11],22,0x895cd7be) ;
-    FF(a,b,c,d,M[12],7,0x6b901122) ;
-    FF(d,a,b,c,M[13],12,0xfd987193) ;
-    FF(c,d,a,b,M[14],17,0xa679438e) ;
-    FF(b,c,d,a,M[15],22,0x49b40821);
-
-    //对M[j]的第二轮循环
-    GG(a,b,c,d,M[1],5,0xf61e2562);
-    GG(d,a,b,c,M[6],9,0xc040b340);
-    GG(c,d,a,b,M[11],14,0x265e5a51);
-    GG(b,c,d,a,M[0],20,0xe9b6c7aa) ;
-    GG(a,b,c,d,M[5],5,0xd62f105d) ;
-    GG(d,a,b,c,M[10],9,0x02441453) ;
-    GG(c,d,a,b,M[15],14,0xd8a1e681);
-    GG(b,c,d,a,M[4],20,0xe7d3fbc8) ;
-    GG(a,b,c,d,M[9],5,0x21e1cde6) ;
-    GG(d,a,b,c,M[14],9,0xc33707d6) ;
-    GG(c,d,a,b,M[3],14,0xf4d50d87) ;
-    GG(b,c,d,a,M[8],20,0x455a14ed);
-    GG(a,b,c,d,M[13],5,0xa9e3e905);
-    GG(d,a,b,c,M[2],9,0xfcefa3f8) ;
-    GG(c,d,a,b,M[7],14,0x676f02d9) ;
-    GG(b,c,d,a,M[12],20,0x8d2a4c8a);
-
-    //对M[j]的第三轮循环
-    HH(a,b,c,d,M[5],4,0xfffa3942);
-    HH(d,a,b,c,M[8],11,0x8771f681);
-    HH(c,d,a,b,M[11],16,0x6d9d6122);
-    HH(b,c,d,a,M[14],23,0xfde5380c) ;
-    HH(a,b,c,d,M[1],4,0xa4beea44) ;
-    HH(d,a,b,c,M[4],11,0x4bdecfa9) ;
-    HH(c,d,a,b,M[7],16,0xf6bb4b60) ;
-    HH(b,c,d,a,M[10],23,0xbebfbc70);
-    HH(a,b,c,d,M[13],4,0x289b7ec6);
-    HH(d,a,b,c,M[0],11,0xeaa127fa);
-    HH(c,d,a,b,M[3],16,0xd4ef3085);
-    HH(b,c,d,a,M[6],23,0x04881d05);
-    HH(a,b,c,d,M[9],4,0xd9d4d039);
-    HH(d,a,b,c,M[12],11,0xe6db99e5);
-    HH(c,d,a,b,M[15],16,0x1fa27cf8) ;
-    HH(b,c,d,a,M[2],23,0xc4ac5665);
-
-    //对M[j]的第四轮循环
-    II(a,b,c,d,M[0],6,0xf4292244) ;
-    II(d,a,b,c,M[7],10,0x432aff97) ;
-    II(c,d,a,b,M[14],15,0xab9423a7);
-    II(b,c,d,a,M[5],21,0xfc93a039) ;
-    II(a,b,c,d,M[12],6,0x655b59c3) ;
-    II(d,a,b,c,M[3],10,0x8f0ccc92) ;
-    II(c,d,a,b,M[10],15,0xffeff47d);
-    II(b,c,d,a,M[1],21,0x85845dd1) ;
-    II(a,b,c,d,M[8],6,0x6fa87e4f) ;
-    II(d,a,b,c,M[15],10,0xfe2ce6e0);
-    II(c,d,a,b,M[6],15,0xa3014314) ;
-    II(b,c,d,a,M[13],21,0x4e0811a1);
-    II(a,b,c,d,M[4],6,0xf7537e82) ;
-    II(d,a,b,c,M[11],10,0xbd3af235);
-    II(c,d,a,b,M[2],15,0x2ad7d2bb);
-    II(b,c,d,a,M[9],21,0xeb86d391);
-
-    A += a;
-    B += b;
-    C += c;
-    D += d;
-</code></pre>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">a = A; b = B; c = C; d = D;</span><br><span class="line"><span class="comment">//对M[j]的第一轮循环</span></span><br><span class="line">FF(a,b,c,d,M[<span class="number">0</span>],<span class="number">7</span>,<span class="number">0xd76aa478</span>);</span><br><span class="line">FF(d,a,b,c,M[<span class="number">1</span>],<span class="number">12</span>,<span class="number">0xe8c7b756</span>);</span><br><span class="line">FF(c,d,a,b,M[<span class="number">2</span>],<span class="number">17</span>,<span class="number">0x242070db</span>);</span><br><span class="line">FF(b,c,d,a,M[<span class="number">3</span>],<span class="number">22</span>,<span class="number">0xc1bdceee</span>);</span><br><span class="line">FF(a,b,c,d,M[<span class="number">4</span>],<span class="number">7</span>,<span class="number">0xf57c0faf</span>);</span><br><span class="line">FF(d,a,b,c,M[<span class="number">5</span>],<span class="number">12</span>,<span class="number">0x4787c62a</span>);</span><br><span class="line">FF(c,d,a,b,M[<span class="number">6</span>],<span class="number">17</span>,<span class="number">0xa8304613</span>);</span><br><span class="line">FF(b,c,d,a,M[<span class="number">7</span>],<span class="number">22</span>,<span class="number">0xfd469501</span>) ;</span><br><span class="line">FF(a,b,c,d,M[<span class="number">8</span>],<span class="number">7</span>,<span class="number">0x698098d8</span>) ;</span><br><span class="line">FF(d,a,b,c,M[<span class="number">9</span>],<span class="number">12</span>,<span class="number">0x8b44f7af</span>) ;</span><br><span class="line">FF(c,d,a,b,M[<span class="number">10</span>],<span class="number">17</span>,<span class="number">0xffff5bb1</span>) ;</span><br><span class="line">FF(b,c,d,a,M[<span class="number">11</span>],<span class="number">22</span>,<span class="number">0x895cd7be</span>) ;</span><br><span class="line">FF(a,b,c,d,M[<span class="number">12</span>],<span class="number">7</span>,<span class="number">0x6b901122</span>) ;</span><br><span class="line">FF(d,a,b,c,M[<span class="number">13</span>],<span class="number">12</span>,<span class="number">0xfd987193</span>) ;</span><br><span class="line">FF(c,d,a,b,M[<span class="number">14</span>],<span class="number">17</span>,<span class="number">0xa679438e</span>) ;</span><br><span class="line">FF(b,c,d,a,M[<span class="number">15</span>],<span class="number">22</span>,<span class="number">0x49b40821</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//对M[j]的第二轮循环</span></span><br><span class="line">GG(a,b,c,d,M[<span class="number">1</span>],<span class="number">5</span>,<span class="number">0xf61e2562</span>);</span><br><span class="line">GG(d,a,b,c,M[<span class="number">6</span>],<span class="number">9</span>,<span class="number">0xc040b340</span>);</span><br><span class="line">GG(c,d,a,b,M[<span class="number">11</span>],<span class="number">14</span>,<span class="number">0x265e5a51</span>);</span><br><span class="line">GG(b,c,d,a,M[<span class="number">0</span>],<span class="number">20</span>,<span class="number">0xe9b6c7aa</span>) ;</span><br><span class="line">GG(a,b,c,d,M[<span class="number">5</span>],<span class="number">5</span>,<span class="number">0xd62f105d</span>) ;</span><br><span class="line">GG(d,a,b,c,M[<span class="number">10</span>],<span class="number">9</span>,<span class="number">0x02441453</span>) ;</span><br><span class="line">GG(c,d,a,b,M[<span class="number">15</span>],<span class="number">14</span>,<span class="number">0xd8a1e681</span>);</span><br><span class="line">GG(b,c,d,a,M[<span class="number">4</span>],<span class="number">20</span>,<span class="number">0xe7d3fbc8</span>) ;</span><br><span class="line">GG(a,b,c,d,M[<span class="number">9</span>],<span class="number">5</span>,<span class="number">0x21e1cde6</span>) ;</span><br><span class="line">GG(d,a,b,c,M[<span class="number">14</span>],<span class="number">9</span>,<span class="number">0xc33707d6</span>) ;</span><br><span class="line">GG(c,d,a,b,M[<span class="number">3</span>],<span class="number">14</span>,<span class="number">0xf4d50d87</span>) ;</span><br><span class="line">GG(b,c,d,a,M[<span class="number">8</span>],<span class="number">20</span>,<span class="number">0x455a14ed</span>);</span><br><span class="line">GG(a,b,c,d,M[<span class="number">13</span>],<span class="number">5</span>,<span class="number">0xa9e3e905</span>);</span><br><span class="line">GG(d,a,b,c,M[<span class="number">2</span>],<span class="number">9</span>,<span class="number">0xfcefa3f8</span>) ;</span><br><span class="line">GG(c,d,a,b,M[<span class="number">7</span>],<span class="number">14</span>,<span class="number">0x676f02d9</span>) ;</span><br><span class="line">GG(b,c,d,a,M[<span class="number">12</span>],<span class="number">20</span>,<span class="number">0x8d2a4c8a</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//对M[j]的第三轮循环</span></span><br><span class="line">HH(a,b,c,d,M[<span class="number">5</span>],<span class="number">4</span>,<span class="number">0xfffa3942</span>);</span><br><span class="line">HH(d,a,b,c,M[<span class="number">8</span>],<span class="number">11</span>,<span class="number">0x8771f681</span>);</span><br><span class="line">HH(c,d,a,b,M[<span class="number">11</span>],<span class="number">16</span>,<span class="number">0x6d9d6122</span>);</span><br><span class="line">HH(b,c,d,a,M[<span class="number">14</span>],<span class="number">23</span>,<span class="number">0xfde5380c</span>) ;</span><br><span class="line">HH(a,b,c,d,M[<span class="number">1</span>],<span class="number">4</span>,<span class="number">0xa4beea44</span>) ;</span><br><span class="line">HH(d,a,b,c,M[<span class="number">4</span>],<span class="number">11</span>,<span class="number">0x4bdecfa9</span>) ;</span><br><span class="line">HH(c,d,a,b,M[<span class="number">7</span>],<span class="number">16</span>,<span class="number">0xf6bb4b60</span>) ;</span><br><span class="line">HH(b,c,d,a,M[<span class="number">10</span>],<span class="number">23</span>,<span class="number">0xbebfbc70</span>);</span><br><span class="line">HH(a,b,c,d,M[<span class="number">13</span>],<span class="number">4</span>,<span class="number">0x289b7ec6</span>);</span><br><span class="line">HH(d,a,b,c,M[<span class="number">0</span>],<span class="number">11</span>,<span class="number">0xeaa127fa</span>);</span><br><span class="line">HH(c,d,a,b,M[<span class="number">3</span>],<span class="number">16</span>,<span class="number">0xd4ef3085</span>);</span><br><span class="line">HH(b,c,d,a,M[<span class="number">6</span>],<span class="number">23</span>,<span class="number">0x04881d05</span>);</span><br><span class="line">HH(a,b,c,d,M[<span class="number">9</span>],<span class="number">4</span>,<span class="number">0xd9d4d039</span>);</span><br><span class="line">HH(d,a,b,c,M[<span class="number">12</span>],<span class="number">11</span>,<span class="number">0xe6db99e5</span>);</span><br><span class="line">HH(c,d,a,b,M[<span class="number">15</span>],<span class="number">16</span>,<span class="number">0x1fa27cf8</span>) ;</span><br><span class="line">HH(b,c,d,a,M[<span class="number">2</span>],<span class="number">23</span>,<span class="number">0xc4ac5665</span>);</span><br><span class="line">   </span><br><span class="line"><span class="comment">//对M[j]的第四轮循环</span></span><br><span class="line">II(a,b,c,d,M[<span class="number">0</span>],<span class="number">6</span>,<span class="number">0xf4292244</span>) ;</span><br><span class="line">II(d,a,b,c,M[<span class="number">7</span>],<span class="number">10</span>,<span class="number">0x432aff97</span>) ;</span><br><span class="line">II(c,d,a,b,M[<span class="number">14</span>],<span class="number">15</span>,<span class="number">0xab9423a7</span>);</span><br><span class="line">II(b,c,d,a,M[<span class="number">5</span>],<span class="number">21</span>,<span class="number">0xfc93a039</span>) ;</span><br><span class="line">II(a,b,c,d,M[<span class="number">12</span>],<span class="number">6</span>,<span class="number">0x655b59c3</span>) ;</span><br><span class="line">II(d,a,b,c,M[<span class="number">3</span>],<span class="number">10</span>,<span class="number">0x8f0ccc92</span>) ;</span><br><span class="line">II(c,d,a,b,M[<span class="number">10</span>],<span class="number">15</span>,<span class="number">0xffeff47d</span>);</span><br><span class="line">II(b,c,d,a,M[<span class="number">1</span>],<span class="number">21</span>,<span class="number">0x85845dd1</span>) ;</span><br><span class="line">II(a,b,c,d,M[<span class="number">8</span>],<span class="number">6</span>,<span class="number">0x6fa87e4f</span>) ;</span><br><span class="line">II(d,a,b,c,M[<span class="number">15</span>],<span class="number">10</span>,<span class="number">0xfe2ce6e0</span>);</span><br><span class="line">II(c,d,a,b,M[<span class="number">6</span>],<span class="number">15</span>,<span class="number">0xa3014314</span>) ;</span><br><span class="line">II(b,c,d,a,M[<span class="number">13</span>],<span class="number">21</span>,<span class="number">0x4e0811a1</span>);</span><br><span class="line">II(a,b,c,d,M[<span class="number">4</span>],<span class="number">6</span>,<span class="number">0xf7537e82</span>) ;</span><br><span class="line">II(d,a,b,c,M[<span class="number">11</span>],<span class="number">10</span>,<span class="number">0xbd3af235</span>);</span><br><span class="line">II(c,d,a,b,M[<span class="number">2</span>],<span class="number">15</span>,<span class="number">0x2ad7d2bb</span>);</span><br><span class="line">II(b,c,d,a,M[<span class="number">9</span>],<span class="number">21</span>,<span class="number">0xeb86d391</span>);</span><br><span class="line"> </span><br><span class="line">A += a;</span><br><span class="line">B += b;</span><br><span class="line">C += c;</span><br><span class="line">D += d;</span><br></pre></td></tr></table></figure>
 <p>处理完所有的512位的分组后，得到一组新的A,B,C,D的值，将这些值按ABCD的顺序级联，然后输出。这里还要注意，输出的MD5是按内存中数值的排列顺序，所以我们要分别对A,B,C,D的值做一个小端规则的转换。举个例子：A有32位，分成4个字节A1A2A3A4。输出A的时候，要这样输出：A4A3 A2A1。这样就能输出正确的MD5了。</p>
 <h2 id="SHA-1杂凑函数">SHA-1杂凑函数</h2>
 <p>SHA-1（Secure Hash Algorithm 1，安全散列算法1）是一种密码杂凑函数，由美国国家安全局设计，并由（NIST）发布为FIPS。SHA-1的数据杂凑值为160位（20字节），杂凑值通常的呈现形式为40个十六进制数。该杂凑函数使用的是和MD5一样的Merkle Damgard结构。</p>
@@ -214,10 +137,10 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 <p>  Wt = Mt , 当0≤t≤15<br/><br>
   Wt = (Wt-3⊕Wt-8⊕Wt-14⊕Wt-16)&lt;&lt;&lt;1, 当16≤t≤79</p>
 <p>SHA1有4轮运算，每一轮包括20个步骤（一共80步），最后产生160位摘要，这160位摘要存放在5个32位的链接变量中，分别标记为A、B、C、D、E。这5个链接变量的初始值以16进制位表示如下。</p>
-<p>  A=0x67452301<br/><br>
-  B=0xEFCDAB89<br/><br>
-  C=0x98BADCFE<br/><br>
-  D=0x10325476<br/><br>
+<p>  A=0x67452301<br>
+  B=0xEFCDAB89<br>
+  C=0x98BADCFE<br>
+  D=0x10325476<br>
   E=0xC3D2E1F0</p>
 <p>SHA1有4轮运算，每一轮包括20个步骤，一共80步，当第1轮运算中的第1步骤开始处理时，A、B、C、D、E五个链接变量中的值先赋值到另外5个记录单元A′，B′，C′，D′，E′中。这5个值将保留，用于在第4轮的最后一个步骤完成之后与链接变量A，B，C，D，E进行求和操作。<br>
 在SHA-1每轮步骤中，使用的函数步骤是一样的：</p>
@@ -233,18 +156,18 @@ a = 0x01234567，b = 0x89abcdef， c = 0xfedcba98，d =0x76543210<br>
 <p>举一个例子来说明SHA1哈希算法中的每一步是怎样进行的，比起MD5算法，SHA1相对简单，假设W[1]=0x12345678，此时链接变量的值分别为A=0x67452301、B=0xEFCDAB89、C=0x98BADCFE、D=0x10325476、E=0xC3D2E1F0，那么第1轮第1步的运算过程如下:</p>
 <ol>
 <li>将链接变量A循环左移5位，得到的结果为：0xE8A4602C。</li>
-<li>将B，C，D经过相应的逻辑函数：<br/><br>
+<li>将B，C，D经过相应的逻辑函数：<br>
 (B&amp;C)|(~B&amp;D)=(0xEFCDAB89&amp;0x98BADCFE)|(~0xEFCDAB89&amp;0x10325476)=0x98BADCFE</li>
-<li>将第（1）步，第（2）步的结果与E，W[1]，和K[1]相加得：<br/><br>
+<li>将第（1）步，第（2）步的结果与E，W[1]，和K[1]相加得：<br>
 0xE8A4602C+0x98BADCFE+0xC3D2E1F0+0x12345678+0x5A827999=0xB1E8EF2B</li>
 <li>将B循环左移30位得：(B&lt;&lt;&lt;30)=0x7BF36AE2。</li>
 <li>将第3步结果赋值给A，A（这里是指A的原始值）赋值给B，步骤4的结果赋值给C，C的原始值赋值给D，D的原始值赋值给E。</li>
 <li>最后得到第1轮第1步的结果：</li>
 </ol>
-<p>  A = 0xB1E8EF2B<br/><br>
-  B = 0x67452301<br/><br>
-  C = 0x7BF36AE2<br/><br>
-  D = 0x98BADCFE<br/><br>
+<p>  A = 0xB1E8EF2B<br>
+  B = 0x67452301<br>
+  C = 0x7BF36AE2<br>
+  D = 0x98BADCFE<br>
   E = 0x10325476</p>
 <p>按照这种方法，将80个步骤进行完毕。第四轮最后一个步骤的A，B，C，D，E输出，将分别与记录单元A′，B′，C′，D′，E′中的数值求和运算。其结果将作为输入成为下一个512位明文分组的链接变量A，B，C，D，E，当最后一个明文分组计算完成以后，A，B，C，D，E中的数据就是最后散列函数值。</p>
 <h2 id="常见杂凑函数对比">常见杂凑函数对比</h2>
