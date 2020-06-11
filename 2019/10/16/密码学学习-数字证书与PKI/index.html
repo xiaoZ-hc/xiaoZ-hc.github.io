@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>密码学学习-数字证书与PKI | xiaoZ's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><meta name="generator" content="Hexo 4.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">密码学学习-数字证书与PKI</h1><a id="logo" href="/.">xiaoZ's Blog</a><p class="description">Try My Best</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">密码学学习-数字证书与PKI</h1><div class="post-meta">Oct 16, 2019<span> | </span><span class="category"><a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a></span></div><a class="disqus-comment-count" data-disqus-identifier="2019/10/16/密码学学习-数字证书与PKI/" href="/2019/10/16/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E4%B8%8EPKI/#disqus_thread"></a><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">Contents</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基本概念"><span class="toc-number">1.</span> <span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#密钥管理发展历程"><span class="toc-number">1.1.</span> <span class="toc-text">密钥管理发展历程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数字签名"><span class="toc-number">1.2.</span> <span class="toc-text">数字签名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数字证书"><span class="toc-number">1.3.</span> <span class="toc-text">数字证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PKI"><span class="toc-number">1.4.</span> <span class="toc-text">PKI</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#数字签名原理"><span class="toc-number">2.</span> <span class="toc-text">数字签名原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#发送方操作"><span class="toc-number">2.1.</span> <span class="toc-text">发送方操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接收方操作"><span class="toc-number">2.2.</span> <span class="toc-text">接收方操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#常见风险"><span class="toc-number">2.3.</span> <span class="toc-text">常见风险</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#公钥基础设施-PKI"><span class="toc-number">3.</span> <span class="toc-text">公钥基础设施 PKI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#PKI-CA架构"><span class="toc-number">3.1.</span> <span class="toc-text">PKI&#x2F;CA架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书签发过程"><span class="toc-number">3.2.</span> <span class="toc-text">证书签发过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书域"><span class="toc-number">3.3.</span> <span class="toc-text">证书域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书验证方法"><span class="toc-number">3.4.</span> <span class="toc-text">证书验证方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书撤销"><span class="toc-number">3.5.</span> <span class="toc-text">证书撤销</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#证书延期"><span class="toc-number">3.6.</span> <span class="toc-text">证书延期</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基于身份的密码学-IBE"><span class="toc-number">4.</span> <span class="toc-text">基于身份的密码学(IBE)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IBE相关概念"><span class="toc-number">4.0.1.</span> <span class="toc-text">IBE相关概念</span></a></li></ol></li></ol></li></ol></div></div><div class="post-content"><p>接上一篇杂凑函数，继续总结，这一篇主要是对数字签名、数字证书的介绍。主要是一些基本概念的介绍。</p>
+<h2 id="基本概念">基本概念</h2>
+<h3 id="密钥管理发展历程">密钥管理发展历程</h3>
+<p><img src="/image/201910_pki/1.png" alt=""></p>
+<p><img src="/image/201910_pki/2.png" alt=""></p>
+<h3 id="数字签名">数字签名</h3>
+<p>数字签名（又称公钥数字签名）是只有信息的发送者才能产生的别人无法伪造的一段数字串，这段数字串同时也是对信息的发送者发送信息真实性的一个有效证明。通过非对称加密算法和MD5、SHA256等消息摘要算法对数据进行签名，用于表明身份以及防止篡改。</p>
+<h3 id="数字证书">数字证书</h3>
+<p>数字证书是指在互联网通讯中标志通讯各方身份信息的一个数字认证，人们可以在网上用它来识别对方的身份。因此数字证书又称为数字标识。数字证书对网络用户在计算机网络交流中的信息和数据等以加密或解密的形式保证了信息和数据的完整性和安全性。数字证书是一种数字文档，其中包含公钥，有关与之关联的实体的一些信息以及来自证书颁发者的数字签名。</p>
+<h3 id="PKI">PKI</h3>
+<p>PKI（Public Key Infrastructure）是将公钥与实体（例如个人和组织）的各自身份绑定的一种安排。绑定是通过证书颁发机构（CA）处的证书注册和颁发过程来建立的。以下为PKI中的一些基本概念：</p>
+<ul>
+<li>数字证书认证机构CA： 负责发放和管理数字证书的权威机构，并作为电子商务交易中受信任的第三方，承担公钥体系中公钥的合法性检验的责任。</li>
+<li>注册机构RA： 注册机构（RA）RA是CA的证书发放、管理的延伸。它负责证书申请者的信息录入、审核以及证书发放等工作；同时，对发放的证书完成相应的管理功能。发放的数字证书可以存放于IC卡、硬盘或软盘等介质中。RA系统是整个CA中心得以正常运营不可缺少的一部分。在RA的下层还可以有多个业务受理点（RS）。</li>
+<li>根证书： 属于根证书颁发机构（CA）的公钥证书，是在公开密钥基础建设中，信任链的起点</li>
+<li>证书链： 一连串的数字证书，由根证书为起点，透过层层信任，使终端实体证书的持有者可以获得转授的信任，以证明身份。</li>
+<li>自签名证书： 一个身份认证证书， 此证书由一个机构签发， 此机构的身份由其自身认证。</li>
+</ul>
+<h2 id="数字签名原理">数字签名原理</h2>
+<p>数字签名一般使用了非对称加密算法和消息摘要算法结合来完成数据安全性的验证。由于数据在网络的传输途中有可能遭遇篡改，如何证明消息是发送方发给接收方，这是数字签名的主要作用之一。</p>
+<h3 id="发送方操作">发送方操作</h3>
+<p>发送方主要准备如下内容：</p>
+<ul>
+<li>待发送的数据</li>
+<li>使用某种消息摘要算法对待发送的数据进行运算获取的特定长度的消息摘要，可以理解为数字指纹，是对待发送数据的身份验证</li>
+<li>准备一对非对称密钥：私钥必须发送方自行严格保管，这是安全的重中之重。公钥则可以公开的形式进行分享，需要注意的是这也是安全的原则之一，需要保证用户能够获取真正的公钥。</li>
+<li>签名：使用私钥对数字指纹进行加密，加密后的指纹就是发送方的签名，使用公钥可以获取此数字指纹内容</li>
+<li>然后，发送方就可以将数据和签名在网络上发送了</li>
+</ul>
+<h3 id="接收方操作">接收方操作</h3>
+<p>接收方从网络上获取传输的数据和签名，然后以安全的方式获取发送方的公钥。然后顺次做如下事情就可以确认数据是否被篡改了：</p>
+<ul>
+<li>使用公钥对签名进行解密，获取数据的数字指纹</li>
+<li>使用相同的摘要算法对数据进行运算，获取消息摘要</li>
+<li>如果自行计算获取的消息摘要和通过使用公钥对签名解密获取的数字指纹一致，则能证明此内容未经其他人所篡改。</li>
+</ul>
+<h3 id="常见风险">常见风险</h3>
+<p>即使使用上述操作，仍然有被其他人所篡改的风险，只要如下内容一旦攻破，所谓的安全也只是形同虚设。</p>
+<ul>
+<li>接收方使用的公钥必须要和发送方进行严格确认，以保证此证书并非被别有居心的中间人所替换</li>
+<li>发送者的私钥必须严格保护，绝对避免泄露，这是身份的标识。</li>
+</ul>
+<p>比如一旦发送者的私钥被泄漏，中间人只需要以网络攻击的方式替换发给接收方的内容即可，基本可随意操作，因为拥有发送方私钥的他基本上就等同与发送方。<br>
+另外也可以从接收方下手，如果接收方使用的是中间人所替代的自己的公钥，辅以替换发给接收方的内容，使用自己的私钥和篡改的数据进行签名，自然一点问题都没有。</p>
+<p>在实际的场景中，还是后一种的风险一般更大，所以从接收方而言，确认使用的证书的有效性和安全性非常重要，所以这也是CA机构存在的重要原因，而使用自签名证书的情况下，保证接收方使用的公钥的正确性则是实际使用中所需要注意的。</p>
+<h2 id="公钥基础设施-PKI">公钥基础设施 PKI</h2>
+<p>在密码学中，PKI是一种机制，它将公钥与实体（如个人和组织）的各自身份绑定在一起。这种约束是通过在证书颁发机构登记和颁发证书的程序来确定的（CA）。</p>
+<h3 id="PKI-CA架构">PKI/CA架构</h3>
+<p>完整的PKI/CA系统如下部分：</p>
+<ul>
+<li>安全服务器：安全服务器面向普通用户，用于提供证书申请、浏览、证书撤销列表、证书下载等安全服务；用户需要首先得到安全服务器的证书（该证书由CA颁发）；</li>
+<li>注册机构RA：在CA体系结构中起承上启下的作用，一方面向CA转发安全服务器传输过来的证书申请请求，另一方面向LDAP服务器和安全服务器转发CA颁发的数字证书和证书撤销列表（CRL）。</li>
+<li>LDAP服务器：Lightweight Directory Access Protocol（轻量目录访问协议），提供目录浏览服务，负责将注册机构服务器RA传输过来的用户信息以及数字证书加入到服务器上。用户通过访问LDAP服务器就能够得到其他用户的数字证书。</li>
+<li>CA服务器：整个证书机构的核心，负责证书的签发。CA首先产生自身的私钥和公钥，然后生成数字证书，并且将数字正常传输给安全服务器。CA还负责为安全服务器、RA服务器生成数字证书。</li>
+<li>数据库服务器：CA中的核心部分，用于CA中数据（如密钥和用户信息等）、日志、统计信息的存储和管理。</li>
+</ul>
+<h3 id="证书签发过程">证书签发过程</h3>
+<p><img src="/image/201910_pki/3.png" alt=""></p>
+<ul>
+<li>用户申请：用户获取CA的数字证书（根证书），与安全服务器建立连接；生成自己的公钥和私钥，将公钥和自己的身份信息提交给安全服务器，安全服务器将用户的申请信息传送给RA服务器。</li>
+<li>RA审核：RA收到用户的申请，用户向RA证明自己的身份，RA进行核对。如果RA同意用户申请证书的请求，则对证书申请信息做数字签名；否则拒绝用户的申请。</li>
+<li>CA发行证书：RA将用户申请和RA签名传输给CA，CA对RA数字签名做认证，如果验证通过，则同意用户请求，颁发证书，然后将证书输出。如果验证不通过，则拒绝证书申请。</li>
+<li>RA转发证书：RA从CA得到新的证书，首先将证书输出到LDAP服务器以提供目录浏览，再通知用户证书发行成功，告知证书序列号，到指定的网址去下载证书。</li>
+<li>用户证书获取：用户使用证书序列号去指定网址下载自己的数字证书，只有持有与申请时提交的公钥配对的私钥才能下载成功。</li>
+</ul>
+<h3 id="证书域">证书域</h3>
+<ul>
+<li>Version版本：v1只支持基本字段；v2添加唯一标识符；v3添加扩展</li>
+<li>Serial Number序列号：非序列（不可预测），并包含至少20位熵，以防御选定的前缀攻击的证书签名。</li>
+<li>Signature Algorithm签名算法</li>
+<li>Issuer发行者</li>
+<li>Validity有限期</li>
+<li>Subject拥有者</li>
+<li>Public key公钥</li>
+</ul>
+<h3 id="证书验证方法">证书验证方法</h3>
+<ul>
+<li>域名验证（DV）：基于对域名控制的证明。在大多数情况下，这意味着发送确认电子邮件到一个批准的电子邮件地址。证书颁发机构CA只需对申请者是否拥有域名所有权进行核实，审核流程简单，甚至有些CA会自动验证。DV证书申请和下发的速度非常快，短则10分钟即可。基于对域的控制权证明。 在大多数情况下，这意味着向确认的电子邮件地址之一发送确认电子邮件。</li>
+<li>组织验证（OV）：要求身份和真实性验证。除了验证域名所有权外，还需要验证网站所有单位的真实身份，审核相对DV证书来说更严 格一些。企业或组织机构申请OV证书，需要提交相应的认证资料，由CA人工审核，一般 需要5~7天。需要身份和真实性验证。</li>
+<li>扩展验证（EV）：要求身份和真实性验证，但要求非常严格</li>
+</ul>
+<h3 id="证书撤销">证书撤销</h3>
+<p>当PKI中某实体的私钥被泄漏时，泄密私钥对应的公钥证书应被作废。或者如果证书中包含的证书持有者和某组织的关系已经中止，相应的公钥证书也应该被作废。</p>
+<p><img src="/image/201910_pki/4.png" alt=""></p>
+<ul>
+<li>应尽快以电话或书面文件方式通知相应证书的签发CA，在密钥泄漏的情况下，应由泄密私钥的持有者通知CA</li>
+<li>在关系中止的情况下，由原关系中组织方或相应的安全机构通知相应的RA或CA</li>
+<li>如果RA得到通知，RA应通知相应的CA</li>
+<li>一旦请求得到认证，CA在数据库中将该证书标记为已作废，并在下次发布CRL时加入该证书序列号及其作废时间</li>
+</ul>
+<h3 id="证书延期">证书延期</h3>
+<p>每个扩展由唯一的对象标识符（OID）、临界度指示符和值组成。必须理解并成功处理标记为关键的扩展；否则必须拒绝整个证书。</p>
+<h2 id="基于身份的密码学-IBE">基于身份的密码学(IBE)</h2>
+<p>基于身份标识的密码系统，是一种非对称的公钥密码体系。</p>
+<p>对于传统的公钥密码体系，由于公钥是一串没有意义的随机数，所以为了确定公钥的拥有者，防止恶意用户欺骗加密者的行为，引入了一个可信第三方（有点类似于证书里面的CA）。第三方维护一个大的表格，表格中存放各个用户的身份，以及其所对应的公钥信息。这种方法虽然很好的解决了公钥区分的问题，但是当用户数量过多，这个表格的维护就变得很困难。因此研究者提出，使用用户的身份作为公钥，从而研究出了基于身份的密码体系(IBE)。</p>
+<p>如果我们用一个表格来描述的话，与一般的公钥体制相比，IBE中各个参与方的能力具有一定的变化：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Public Key Encryption</th>
+<th>Identity-Based Encryption</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>私钥产生</td>
+<td>接收者</td>
+<td>PKG</td>
+</tr>
+<tr>
+<td>公钥管理</td>
+<td>可信第三方</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+<h4 id="IBE相关概念">IBE相关概念</h4>
+<p>首先假设存在一个可信的密钥生成中心（trusted key generation center，KGG）；用户选择他的名字（或者是，网络地址，所在街道地址门牌号，电话号码）作为公钥，相应的私钥由KGG计算出来分配给每个加入网络中的用户。IBE有点类似于理想的邮件系统：如果你知道某个人的姓名和地址，你可以发给他只有他才能读的信，你可以认证他签的签名。</p>
+<ul>
+<li>Setup(k) —&gt;PK,MSK：建立算法以安全参数k为输入，输出为公共参数PK和主密钥MSK。该算法由PKG完成，公布公共参数PK，保存主密钥MSK。</li>
+<li>KeyGen(PK,MSK,ID)—&gt;SK(ID)：密钥提取算法以公共参数PK，主密钥MSK和一个身份认证信息ID为输入，输出该身份信息对应的私钥SK(ID)。该算法由PKG完成，并通过安全信道SR(ID)返回给对应用户。</li>
+<li>Encrypt(PK,M,SK(ID))—&gt;CT：加密算法以公共参数PK，明文消息M，以及接受者的身份信息ID为输入，输出密文CT。该算法由信息发送者（加密者）完成，并将密文通过公开信道发送给对应的接受者（解密者）</li>
+<li>Decrypt(PK,CT,SK(ID))—&gt;M：解密算法以公共参数PK，密文CT，私钥SK(ID)为输入，在正确解密时输出明文M，或在不能正确解密时返回符号 ⊥。该算法由接受者（解密者）完成。</li>
+</ul>
+</div><div class="tags"><a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a><a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/">网络安全理论</a><a href="/tags/%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0/">哈希函数</a></div><div class="post-nav"><a class="pre" href="/2019/12/17/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%88%9D%E6%8E%A2/">正则表达式初探</a><a class="next" href="/2019/10/12/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E5%AF%86%E7%A0%81%E6%9D%82%E5%87%91%E5%87%BD%E6%95%B0/">密码学学习—密码杂凑函数</a></div><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'http://www.xiaozzz.xyz/2019/10/16/密码学学习-数字证书与PKI/';
+    this.page.identifier = '2019/10/16/密码学学习-数字证书与PKI/';
+    this.page.title = '密码学学习-数字证书与PKI';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//xiaoZz.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//xiaoZz.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://xiaoZz.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CTF-writeup/">CTF_writeup</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D/">Web漏洞介绍</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BC%96%E7%A0%81%E4%B8%8E%E5%BC%80%E5%8F%91/">编码与开发</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/Web%E6%BC%8F%E6%B4%9E/" style="font-size: 15px;">Web漏洞</a> <a href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" style="font-size: 15px;">反序列化</a> <a href="/tags/CTF/" style="font-size: 15px;">CTF</a> <a href="/tags/SSRF/" style="font-size: 15px;">SSRF</a> <a href="/tags/Web/" style="font-size: 15px;">Web</a> <a href="/tags/writeup/" style="font-size: 15px;">writeup</a> <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" style="font-size: 15px;">密码学</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/" style="font-size: 15px;">网络安全理论</a> <a href="/tags/%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0/" style="font-size: 15px;">哈希函数</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%93%8D%E4%BD%9C/" style="font-size: 15px;">字符串操作</a> <a href="/tags/%E5%BC%80%E5%8F%91/" style="font-size: 15px;">开发</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Recent</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/%E7%BD%91%E9%BC%8E%E6%9D%AF2020-%E9%9D%92%E9%BE%99%E7%BB%84-%E9%83%A8%E5%88%86WP/">网鼎杯2020-青龙组-部分WP</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/28/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93(%E4%BA%8C)-%E5%B0%8F%E7%99%BD%E6%96%87/">PHP反序列化总结(二)</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/23/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93(%E4%B8%80)-%E5%B0%8F%E7%99%BD%E6%96%87/">PHP反序列化总结(一)-小白文</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/17/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%88%9D%E6%8E%A2/">正则表达式初探</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/16/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E4%B8%8EPKI/">密码学学习-数字证书与PKI</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/12/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0%E2%80%94%E5%AF%86%E7%A0%81%E6%9D%82%E5%87%91%E5%87%BD%E6%95%B0/">密码学学习—密码杂凑函数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/02/xctf-oj-web-wtf-sh/">xctf_oj_web_wtf.sh</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/09/19/xctf-oj-web%E7%B3%BB%E5%88%97WP/">xctf_oj_web系列WP</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/09/15/SSRF%E7%AE%80%E4%BB%8B-%E5%B0%8F%E7%99%BD%E6%96%87/">SSRF简介-小白文</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/09/03/%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2/">写在前面</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-comment-o"> Recent Comments</i></div><script type="text/javascript" src="//xiaoZz.disqus.com/recent_comments_widget.js?num_items=5&amp;hide_avatars=1&amp;avatar_size=32&amp;excerpt_length=20&amp;hide_mods=1"></script></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Links</i></div><ul></ul><a href="https://momomoxiaoxi.com/" title="moxiaoxi" target="_blank">moxiaoxi</a><ul></ul><a href="http://w0.nisl.cf/" title="crawler_test_index" target="_blank">crawler_test_index</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">xiaoZ's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" color="100,100,100" opacity="0.5" zIndex="-2" count="50" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
