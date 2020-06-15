@@ -62,9 +62,9 @@
     
       <category term="Web漏洞" scheme="http://www.xiaozzz.xyz/tags/Web%E6%BC%8F%E6%B4%9E/"/>
     
-      <category term="反序列化" scheme="http://www.xiaozzz.xyz/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
-    
       <category term="CTF" scheme="http://www.xiaozzz.xyz/tags/CTF/"/>
+    
+      <category term="反序列化" scheme="http://www.xiaozzz.xyz/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
   </entry>
   
@@ -89,9 +89,9 @@
     
       <category term="Web漏洞" scheme="http://www.xiaozzz.xyz/tags/Web%E6%BC%8F%E6%B4%9E/"/>
     
-      <category term="反序列化" scheme="http://www.xiaozzz.xyz/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
-    
       <category term="CTF" scheme="http://www.xiaozzz.xyz/tags/CTF/"/>
+    
+      <category term="反序列化" scheme="http://www.xiaozzz.xyz/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
   </entry>
   
@@ -114,9 +114,9 @@
       <category term="编码与开发" scheme="http://www.xiaozzz.xyz/categories/%E7%BC%96%E7%A0%81%E4%B8%8E%E5%BC%80%E5%8F%91/"/>
     
     
-      <category term="CTF" scheme="http://www.xiaozzz.xyz/tags/CTF/"/>
-    
       <category term="网络安全理论" scheme="http://www.xiaozzz.xyz/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/"/>
+    
+      <category term="CTF" scheme="http://www.xiaozzz.xyz/tags/CTF/"/>
     
       <category term="字符串操作" scheme="http://www.xiaozzz.xyz/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%93%8D%E4%BD%9C/"/>
     
@@ -126,10 +126,35 @@
   
   <entry>
     <title>密码学学习-数字证书与PKI</title>
+    <link href="http://www.xiaozzz.xyz/2019/10/20/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-MAC%E4%B8%8EAEAD/"/>
+    <id>http://www.xiaozzz.xyz/2019/10/20/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-MAC%E4%B8%8EAEAD/</id>
+    <published>2019-10-20T14:03:48.000Z</published>
+    <updated>2020-06-15T11:34:08.381Z</updated>
+    
+    <content type="html"><![CDATA[<p>这一篇主要是对消息认证码(MAC)和AEAD的介绍，涵盖一些常见模式的原理和结构，其中在MAC算法中主要对HMAC进行介绍，并从AE到AEAD的整个过程对AEAD进行介绍。</p><h2 id="基本概念">基本概念</h2><h3 id="信息安全三大属性">信息安全三大属性</h3><p>在MAC与AEAD前，先看一下信息安全的三大属性，而如果保证信息传输过程中信息符合这三大性质，正是MAC和AEAD设计的出发点。</p><ol><li>机密性</li></ol><p>机密性意味着对信息实施了必要的安全措施，阻止未授权的访问和泄露，也包括保护个人隐私、敏感数据等。机密性（confidentiality）确保在数据处理的每一个交叉点上都实施了必要级别的安全保护并阻止未经收取授权的信息披露。在数据存储到网络内部的系统和设备上时、数据传输时以及数据到达目的地之后，这种级别的保密都应该发挥作用。</p><ol start="2"><li>完整性</li></ol><p>完整性意味着对信息实施了必要的安全措施，阻止未授权的篡改和破坏，也包括信息的不可否认性和真实性。完整性（integrity）指的是保证信息和系统的准确性和可靠性，并禁止对数据的非授权更改。硬件、软件和通信机制必须协同工作，才能正确地维护和处理数据，并且能够在不被意外更改的情况下将数据移动至预期的目的地。应当保护系统和网络免受外界的干扰和污染。</p><ol start="3"><li>可用性</li></ol><p>可用性意味着对信息实施了必要的安全措施，使得信息和系统能够被授权实体可靠、及时的访问到。可用性（availability）保护确保授权的用户能够对数据和资源进行及时的和可靠的访问。网络设备、计算机和应用程序应当提供充分的功能，从而能够在可以接受的性能级别以可预计的方式运行。</p><h3 id="消息认证码-MAC">消息认证码(MAC)</h3><p>消息认证码（MAC）是指通过以某种形式对信息应用密码密钥而派生的一种身份验证机制，其并不使用对称密钥来加密信息，是保证消息数据完整性的一种工具。构造方法由M.Bellare提出，安全性依赖于Hash函数，故也称带密钥的Hash函数。消息认证码是基于密钥和消息摘要所获得的一个值，可用于数据源发认证和完整性校验。</p><p>在发送数据之前，发送方首先使用通信双方协商好的散列函数计算其摘要值。在双方共享的会话密钥作用下，由摘要值获得消息验证码。之后，它和数据一起被发送。接收方收到报文后，首先利用会话密钥还原摘要值，同时利用散列函数在本地计算所收到数据的摘要值，并将这两个数据进行比对。若两者相等，则报文通过认证</p><p>在安全性方面，一个安全的 MAC 算法要满足三个条件：抗碰撞性；消息认证码在其空间内均匀分布；消息验证码的一个或一些比特不能弱于其他比特。满足以上三个条件的消息验证码能够防止穷举搜索攻击，攻击者也无法成功伪造一个消息验证码。</p><p>MAC一般有三种基本类型：</p><ul><li>HMAC散列MAC</li><li>CBC-MAC</li><li>CMAC</li></ul><h3 id="AEAD">AEAD</h3><p>认证加密（Authenticated encryption，AE）和带有关联数据的认证加密（authenticated encryption with associated data，AEAD，AE的变种）是一种能够同时保证数据的保密性、 完整性和真实性的一种加密模式。</p><h2 id="HMAC">HMAC</h2><p>HMAC，散列消息鉴别码，是基于密钥的 Hash 算法的认证协议。密钥相关的哈希运算消息认证码，HMAC运算利用哈希算法，以一个密钥和一个消息为输入，生成一个消息摘要作为输出。 HMAC算法是基于信息摘要算法的。目前主要集合了MD和SHA两大系列消息摘要算法。其中MD系列的算法有HmacMD2、HmacMD4、HmacMD5三种算法；SHA系列的算法有HmacSHA1、HmacSHA224、HmacSHA256、HmacSHA384、HmacSHA512五种算法。</p><p>HMAC算法除了需要信息摘要算法外，还需要一个密钥。HMAC的密钥可以是任何长度，如果密钥的长度超过了摘要算法信息分组的长度，则首先使用摘要算法计算密钥的摘要作为新的密钥。一般不建议使用太短的密钥，因为密钥的长度与安全强度是相关的。通常选取密钥长度不小于所选用摘要算法输出的信息摘要的长度。</p><p>HMAC的实现原理是，用公开函数和密钥产生一个固定长度的值作为认证标识，用这个标识鉴别消息的完整性。使用一个密钥生成一个固定大小的小数据块，即MAC，并将其加入到消息中，然后传输。接收方利用与发送方共享的密钥进行鉴别认证等。</p><p><img src="/image/201910_MACAEAD/1.png" alt=""></p><p>这种结构的主要作用是：</p><ul><li>不用修改就可以使用适合的散列函数，而且散列函数在软件方面表现的很好， 并且源码是公开和通用的。</li><li>可以保持散列函数原有的性能而不致使其退化。</li><li>可以使得基于合理的关于底层散列函数假设的消息鉴别机制的加密强度分析 便于理解。</li><li>当发现或需要运算速度更快或更安全的散列函数时，可以很容易的实现底层 散列函数的替换。</li></ul><p>定义 HMAC 需要一个加密用散列函数（表示为H）和一个密钥K。我们假设H是一个将数据块用一个基本的迭代压缩函数来加密的散列函数。我们用B来表示数据块的字长。（以上提到的散列函数的分割数据块字长B = 64），用L来表示散列函数的输出数据字长（MD5中L=16, SHA-1中L=20）。鉴别密钥的长度可以是小于等于数据块字长的任何正整数值。应用程序中使用的密钥长度若是比B大，则首先用使用散列函数H作用于它，然后用H输出的L长度字符串作为在HMAC中实际使用的密钥。一般情况下，推荐的最小密钥K长度是L个字长。（与H的输出数据长度相等）。HAMC相关概念如下：</p><figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line">H：hash算法，比如（MD5，SHA<span class="number">-1</span>，SHA<span class="number">-256</span>）</span><br><span class="line">B：块字节的长度，块是hash操作的基本单位。这里B=<span class="number">64</span>。</span><br><span class="line">L：hash算法计算出来的字节长度。(L=<span class="number">16</span> <span class="keyword">for</span> MD5, L=<span class="number">20</span> <span class="keyword">for</span> SHA<span class="number">-1</span>)。</span><br><span class="line">K：共享密钥，K的长度可以是任意的，但是为了安全考虑，还是推荐K的长度&gt;B。当K长度大于B时候，会先在K上面执行hash算法，将得到的L长度结果作为新的共享密钥。 如果K的长度&lt;B, 那么会在K后面填充<span class="number">0x00</span>一直到等于长度B。</span><br><span class="line">text： 要加密的内容</span><br><span class="line">opad：外部填充常量，是 <span class="number">0x5C</span> 重复B次。</span><br><span class="line">ipad： 内部填充常量，是<span class="number">0x36</span> 重复B次。</span><br><span class="line">XOR： 异或运算。</span><br></pre></td></tr></table></figure><p>计算 ‘text’ 的 HMAC公式：</p><figure class="highlight lisp"><table><tr><td class="code"><pre><span class="line">H (<span class="name">K</span> XOR opad, H (<span class="name">K</span> XOR ipad, text))</span><br></pre></td></tr></table></figure><p>具体计算步骤如下：</p><ol><li>在密钥 K 后面添加 0 来创建一个子长为 B 的字符串。(例如，如果 K 的字长是 20 字节，B＝60 字节，则 K 后会加入 44 个零字节0x00)</li><li>将上一步生成的 B 字长的字符串与 ipad 做异或运算</li><li>将数据流 text 填充至第二步的结果字符串中</li><li>用 H 作用于第三步生成的数据流</li><li>将第一步生成的 B 字长字符串与 opad 做异或运算</li><li>再将第四步的结果填充进第五步的结果中</li><li>用 H 作用于第六步生成的数据流，输出最终结果</li></ol><p>其中，用于HMAC的密钥可以是任意长度（比 B 长的密钥将首先被 H 处理）。但当密钥 长度小于 L 时，会降低函数的安全强度。长度大于 L 的密钥也是可以的，但额外的长度并不能显著的提高函数的安全强度。<br>密钥必须随机选取(或使用强大的基于随机种子的伪随机生成方法)，并且要周期性的更新。目前的攻击没有指出一个有效的更换密钥的频率，因为那些攻击实际上并不可行。然而，周期性更新密钥是一个对付函数和密钥所存在的潜在缺陷的基本的安全措施，并可以降低泄漏密钥带来的危害。</p><p>HMAC的一个典型应用是用在“挑战/响应”（Challenge/Response）身份认证中，认证流程如下：</p><ol><li>先由客户端向服务器发出一个验证请求。</li><li>服务器接到此请求后生成一个随机数并通过网络传输给客户端（此为挑战）。</li><li>客户端将收到的随机数提供给ePass，由ePass使用该随机数与存储在ePass中的密钥进行HMAC-MD5运算并得到一个结果作为认证证据传给服务器（此为响应）。</li><li>与此同时，服务器也使用该随机数与存储在服务器数据库中的该客户密钥进行HMAC-MD5运算，如果服务器的运算结果与客户端传回的响应结果相同，则认为客户端是一个合法用户</li></ol><h2 id="从AE到AEAD">从AE到AEAD</h2><p>AEAD 产生的原因很简单，单纯的对称加密算法，其解密步骤是无法确认密钥是否正确的。也就是说，加密后的数据可以用任何密钥执行解密运算，得到一组疑似原始数据，而不知道密钥是否是正确的，也不知道解密出来的原始数据是否正确。</p><p>因此，需要在单纯的加密算法之上，加上一层验证手段，来确认解密步骤是否正确。</p><p>简单地把加密算法和认证算法组合，可以实现上述目的，并由此产生了几个方案：</p><p>第一种方案，EtM (Encryption then MAC)</p><p><img src="/image/201910_MACAEAD/2.png" alt=""></p><p>先加密，然后对密文进行 MAC 运算（一般用各种 HMAC），把二者拼接起来，发给接收方。<br>接收方先验证 MAC，如果验证通过，则证明密钥是正确的，然后执行解密运算。</p><p>第二种方案，E&amp;M (Encryption and MAC)</p><p><img src="/image/201910_MACAEAD/3.png" alt=""></p><p>同时对原始数据执行加密和 MAC 运算，把二者拼接起来，发给接收方。<br>接收方先进行解密，然后对解密结果执行 MAC 运算，比对发来的 MAC，验证正确性。</p><p>第三种方案，MtE (MAC then Encryption)</p><p><img src="/image/201910_MACAEAD/4.png" alt=""></p><p>与 EtM 相反，先对原始数据执行 MAC 运算，与原始数据拼接后，执行加密算法，将密文发送给接收方。<br>接受方先进行解密，然后执行 MAC 运算，验证解密结果是否正确。</p><p>从 2008 年起，业内开始提出，需要在一个算法在内部同时实现加密和认证。基于这个思想，一些新的算法被提出，这些算法被称为真正的 AEAD 算法。其中，常见的 AEAD 算法如下：</p><ul><li>AES-128-GCM</li><li>AES-192-GCM</li><li>AES-256-GCM</li><li>ChaCha20-IETF-Poly1305</li><li>XChaCha20-IETF-Poly1305</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      这一篇主要是对消息认证码(MAC)和AEAD的介绍，涵盖一些常见模式的原理和结构，其中在MAC算法中主要对HMAC进行介绍，并从AE到AEAD的整个过程对AEAD进行介绍。
+    
+    </summary>
+    
+    
+      <category term="密码学" scheme="http://www.xiaozzz.xyz/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
+    
+    
+      <category term="密码学" scheme="http://www.xiaozzz.xyz/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
+    
+      <category term="网络安全理论" scheme="http://www.xiaozzz.xyz/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>密码学学习-数字证书与PKI</title>
     <link href="http://www.xiaozzz.xyz/2019/10/16/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E4%B8%8EPKI/"/>
     <id>http://www.xiaozzz.xyz/2019/10/16/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E4%B8%8EPKI/</id>
     <published>2019-10-16T04:09:48.000Z</published>
-    <updated>2020-06-11T06:08:09.019Z</updated>
+    <updated>2020-06-11T14:04:59.772Z</updated>
     
     <content type="html"><![CDATA[<p>接上一篇杂凑函数，继续总结，这一篇主要是对数字签名、数字证书的介绍。主要是一些基本概念的介绍。</p><h2 id="基本概念">基本概念</h2><h3 id="数字签名">数字签名</h3><p>数字签名（又称公钥数字签名）是只有信息的发送者才能产生的别人无法伪造的一段数字串，这段数字串同时也是对信息的发送者发送信息真实性的一个有效证明。通过非对称加密算法和MD5、SHA256等消息摘要算法对数据进行签名，用于表明身份以及防止篡改。</p><h3 id="数字证书">数字证书</h3><p>数字证书是指在互联网通讯中标志通讯各方身份信息的一个数字认证，人们可以在网上用它来识别对方的身份。因此数字证书又称为数字标识。数字证书对网络用户在计算机网络交流中的信息和数据等以加密或解密的形式保证了信息和数据的完整性和安全性。数字证书是一种数字文档，其中包含公钥，有关与之关联的实体的一些信息以及来自证书颁发者的数字签名。</p><h3 id="PKI">PKI</h3><p>PKI（Public Key Infrastructure）是将公钥与实体（例如个人和组织）的各自身份绑定的一种安排。绑定是通过证书颁发机构（CA）处的证书注册和颁发过程来建立的。以下为PKI中的一些基本概念：</p><ul><li>数字证书认证机构CA： 负责发放和管理数字证书的权威机构，并作为电子商务交易中受信任的第三方，承担公钥体系中公钥的合法性检验的责任。</li><li>注册机构RA： 注册机构（RA）RA是CA的证书发放、管理的延伸。它负责证书申请者的信息录入、审核以及证书发放等工作；同时，对发放的证书完成相应的管理功能。发放的数字证书可以存放于IC卡、硬盘或软盘等介质中。RA系统是整个CA中心得以正常运营不可缺少的一部分。在RA的下层还可以有多个业务受理点（RS）。</li><li>根证书： 属于根证书颁发机构（CA）的公钥证书，是在公开密钥基础建设中，信任链的起点</li><li>证书链： 一连串的数字证书，由根证书为起点，透过层层信任，使终端实体证书的持有者可以获得转授的信任，以证明身份。</li><li>自签名证书： 一个身份认证证书， 此证书由一个机构签发， 此机构的身份由其自身认证。</li></ul><h2 id="数字签名原理">数字签名原理</h2><p>数字签名一般使用了非对称加密算法和消息摘要算法结合来完成数据安全性的验证。由于数据在网络的传输途中有可能遭遇篡改，如何证明消息是发送方发给接收方，这是数字签名的主要作用之一。</p><h3 id="发送方操作">发送方操作</h3><p>发送方主要准备如下内容：</p><ul><li>待发送的数据</li><li>使用某种消息摘要算法对待发送的数据进行运算获取的特定长度的消息摘要，可以理解为数字指纹，是对待发送数据的身份验证</li><li>准备一对非对称密钥：私钥必须发送方自行严格保管，这是安全的重中之重。公钥则可以公开的形式进行分享，需要注意的是这也是安全的原则之一，需要保证用户能够获取真正的公钥。</li><li>签名：使用私钥对数字指纹进行加密，加密后的指纹就是发送方的签名，使用公钥可以获取此数字指纹内容</li><li>然后，发送方就可以将数据和签名在网络上发送了</li></ul><h3 id="接收方操作">接收方操作</h3><p>接收方从网络上获取传输的数据和签名，然后以安全的方式获取发送方的公钥。然后顺次做如下事情就可以确认数据是否被篡改了：</p><ul><li>使用公钥对签名进行解密，获取数据的数字指纹</li><li>使用相同的摘要算法对数据进行运算，获取消息摘要</li><li>如果自行计算获取的消息摘要和通过使用公钥对签名解密获取的数字指纹一致，则能证明此内容未经其他人所篡改。</li></ul><h3 id="常见风险">常见风险</h3><p>即使使用上述操作，仍然有被其他人所篡改的风险，只要如下内容一旦攻破，所谓的安全也只是形同虚设。</p><ul><li>接收方使用的公钥必须要和发送方进行严格确认，以保证此证书并非被别有居心的中间人所替换</li><li>发送者的私钥必须严格保护，绝对避免泄露，这是身份的标识。</li></ul><p>比如一旦发送者的私钥被泄漏，中间人只需要以网络攻击的方式替换发给接收方的内容即可，基本可随意操作，因为拥有发送方私钥的他基本上就等同与发送方。<br>另外也可以从接收方下手，如果接收方使用的是中间人所替代的自己的公钥，辅以替换发给接收方的内容，使用自己的私钥和篡改的数据进行签名，自然一点问题都没有。</p><p>在实际的场景中，还是后一种的风险一般更大，所以从接收方而言，确认使用的证书的有效性和安全性非常重要，所以这也是CA机构存在的重要原因，而使用自签名证书的情况下，保证接收方使用的公钥的正确性则是实际使用中所需要注意的。</p><h2 id="公钥基础设施-PKI">公钥基础设施 PKI</h2><p>在密码学中，PKI是一种机制，它将公钥与实体（如个人和组织）的各自身份绑定在一起。这种约束是通过在证书颁发机构登记和颁发证书的程序来确定的（CA）。</p><h3 id="PKI-CA架构">PKI/CA架构</h3><p>完整的PKI/CA系统如下部分：</p><ul><li>安全服务器：安全服务器面向普通用户，用于提供证书申请、浏览、证书撤销列表、证书下载等安全服务；用户需要首先得到安全服务器的证书（该证书由CA颁发）；</li><li>注册机构RA：在CA体系结构中起承上启下的作用，一方面向CA转发安全服务器传输过来的证书申请请求，另一方面向LDAP服务器和安全服务器转发CA颁发的数字证书和证书撤销列表（CRL）。</li><li>LDAP服务器：Lightweight Directory Access Protocol（轻量目录访问协议），提供目录浏览服务，负责将注册机构服务器RA传输过来的用户信息以及数字证书加入到服务器上。用户通过访问LDAP服务器就能够得到其他用户的数字证书。</li><li>CA服务器：整个证书机构的核心，负责证书的签发。CA首先产生自身的私钥和公钥，然后生成数字证书，并且将数字正常传输给安全服务器。CA还负责为安全服务器、RA服务器生成数字证书。</li><li>数据库服务器：CA中的核心部分，用于CA中数据（如密钥和用户信息等）、日志、统计信息的存储和管理。</li></ul><h3 id="证书签发过程">证书签发过程</h3><p><img src="/image/201910_pki/3.png" alt=""></p><ul><li>用户申请：用户获取CA的数字证书（根证书），与安全服务器建立连接；生成自己的公钥和私钥，将公钥和自己的身份信息提交给安全服务器，安全服务器将用户的申请信息传送给RA服务器。</li><li>RA审核：RA收到用户的申请，用户向RA证明自己的身份，RA进行核对。如果RA同意用户申请证书的请求，则对证书申请信息做数字签名；否则拒绝用户的申请。</li><li>CA发行证书：RA将用户申请和RA签名传输给CA，CA对RA数字签名做认证，如果验证通过，则同意用户请求，颁发证书，然后将证书输出。如果验证不通过，则拒绝证书申请。</li><li>RA转发证书：RA从CA得到新的证书，首先将证书输出到LDAP服务器以提供目录浏览，再通知用户证书发行成功，告知证书序列号，到指定的网址去下载证书。</li><li>用户证书获取：用户使用证书序列号去指定网址下载自己的数字证书，只有持有与申请时提交的公钥配对的私钥才能下载成功。</li></ul><h3 id="证书域">证书域</h3><ul><li>Version版本：v1只支持基本字段；v2添加唯一标识符；v3添加扩展</li><li>Serial Number序列号：非序列（不可预测），并包含至少20位熵，以防御选定的前缀攻击的证书签名。</li><li>Signature Algorithm签名算法</li><li>Issuer发行者</li><li>Validity有限期</li><li>Subject拥有者</li><li>Public key公钥</li></ul><h3 id="证书验证方法">证书验证方法</h3><ul><li>域名验证（DV）：基于对域名控制的证明。在大多数情况下，这意味着发送确认电子邮件到一个批准的电子邮件地址。证书颁发机构CA只需对申请者是否拥有域名所有权进行核实，审核流程简单，甚至有些CA会自动验证。DV证书申请和下发的速度非常快，短则10分钟即可。基于对域的控制权证明。 在大多数情况下，这意味着向确认的电子邮件地址之一发送确认电子邮件。</li><li>组织验证（OV）：要求身份和真实性验证。除了验证域名所有权外，还需要验证网站所有单位的真实身份，审核相对DV证书来说更严 格一些。企业或组织机构申请OV证书，需要提交相应的认证资料，由CA人工审核，一般 需要5~7天。需要身份和真实性验证。</li><li>扩展验证（EV）：要求身份和真实性验证，但要求非常严格</li></ul><h3 id="证书撤销">证书撤销</h3><p>当PKI中某实体的私钥被泄漏时，泄密私钥对应的公钥证书应被作废。或者如果证书中包含的证书持有者和某组织的关系已经中止，相应的公钥证书也应该被作废。</p><p><img src="/image/201910_pki/4.png" alt=""></p><ul><li>应尽快以电话或书面文件方式通知相应证书的签发CA，在密钥泄漏的情况下，应由泄密私钥的持有者通知CA</li><li>在关系中止的情况下，由原关系中组织方或相应的安全机构通知相应的RA或CA</li><li>如果RA得到通知，RA应通知相应的CA</li><li>一旦请求得到认证，CA在数据库中将该证书标记为已作废，并在下次发布CRL时加入该证书序列号及其作废时间</li></ul><h3 id="证书延期">证书延期</h3><p>每个扩展由唯一的对象标识符（OID）、临界度指示符和值组成。必须理解并成功处理标记为关键的扩展；否则必须拒绝整个证书。</p><h2 id="基于身份的密码学-IBE">基于身份的密码学(IBE)</h2><p>基于身份标识的密码系统，是一种非对称的公钥密码体系。</p><p>对于传统的公钥密码体系，由于公钥是一串没有意义的随机数，所以为了确定公钥的拥有者，防止恶意用户欺骗加密者的行为，引入了一个可信第三方（有点类似于证书里面的CA）。第三方维护一个大的表格，表格中存放各个用户的身份，以及其所对应的公钥信息。这种方法虽然很好的解决了公钥区分的问题，但是当用户数量过多，这个表格的维护就变得很困难。因此研究者提出，使用用户的身份作为公钥，从而研究出了基于身份的密码体系(IBE)。</p><p>如果我们用一个表格来描述的话，与一般的公钥体制相比，IBE中各个参与方的能力具有一定的变化：</p><table><thead><tr><th></th><th>Public Key Encryption</th><th>Identity-Based Encryption</th></tr></thead><tbody><tr><td>私钥产生</td><td>接收者</td><td>PKG</td></tr><tr><td>公钥管理</td><td>可信第三方</td><td>无</td></tr></tbody></table><h4 id="IBE相关概念">IBE相关概念</h4><p>首先假设存在一个可信的密钥生成中心（trusted key generation center，KGG）；用户选择他的名字（或者是，网络地址，所在街道地址门牌号，电话号码）作为公钥，相应的私钥由KGG计算出来分配给每个加入网络中的用户。IBE有点类似于理想的邮件系统：如果你知道某个人的姓名和地址，你可以发给他只有他才能读的信，你可以认证他签的签名。</p><ul><li>Setup(k) —&gt;PK,MSK：建立算法以安全参数k为输入，输出为公共参数PK和主密钥MSK。该算法由PKG完成，公布公共参数PK，保存主密钥MSK。</li><li>KeyGen(PK,MSK,ID)—&gt;SK(ID)：密钥提取算法以公共参数PK，主密钥MSK和一个身份认证信息ID为输入，输出该身份信息对应的私钥SK(ID)。该算法由PKG完成，并通过安全信道SR(ID)返回给对应用户。</li><li>Encrypt(PK,M,SK(ID))—&gt;CT：加密算法以公共参数PK，明文消息M，以及接受者的身份信息ID为输入，输出密文CT。该算法由信息发送者（加密者）完成，并将密文通过公开信道发送给对应的接受者（解密者）</li><li>Decrypt(PK,CT,SK(ID))—&gt;M：解密算法以公共参数PK，密文CT，私钥SK(ID)为输入，在正确解密时输出明文M，或在不能正确解密时返回符号 ⊥。该算法由接受者（解密者）完成。</li></ul>]]></content>
     
@@ -143,11 +168,9 @@
       <category term="密码学" scheme="http://www.xiaozzz.xyz/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
     
     
-      <category term="网络安全理论" scheme="http://www.xiaozzz.xyz/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/"/>
-    
       <category term="密码学" scheme="http://www.xiaozzz.xyz/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
     
-      <category term="哈希函数" scheme="http://www.xiaozzz.xyz/tags/%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0/"/>
+      <category term="网络安全理论" scheme="http://www.xiaozzz.xyz/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/"/>
     
   </entry>
   
@@ -170,9 +193,9 @@
       <category term="密码学" scheme="http://www.xiaozzz.xyz/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
     
     
-      <category term="网络安全理论" scheme="http://www.xiaozzz.xyz/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/"/>
-    
       <category term="密码学" scheme="http://www.xiaozzz.xyz/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/"/>
+    
+      <category term="网络安全理论" scheme="http://www.xiaozzz.xyz/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/"/>
     
       <category term="哈希函数" scheme="http://www.xiaozzz.xyz/tags/%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0/"/>
     
@@ -253,9 +276,9 @@
     
       <category term="Web漏洞" scheme="http://www.xiaozzz.xyz/tags/Web%E6%BC%8F%E6%B4%9E/"/>
     
-      <category term="CTF" scheme="http://www.xiaozzz.xyz/tags/CTF/"/>
-    
       <category term="SSRF" scheme="http://www.xiaozzz.xyz/tags/SSRF/"/>
+    
+      <category term="CTF" scheme="http://www.xiaozzz.xyz/tags/CTF/"/>
     
   </entry>
   
