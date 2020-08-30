@@ -67,16 +67,16 @@
       
       <categories>
           
-          <category> Web漏洞介绍 </category>
+          <category> CTF_writeup </category>
           
       </categories>
       
       
         <tags>
             
-            <tag> Web漏洞 </tag>
-            
             <tag> CTF </tag>
+            
+            <tag> writeup </tag>
             
         </tags>
       
