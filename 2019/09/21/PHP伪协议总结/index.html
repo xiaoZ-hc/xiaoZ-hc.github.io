@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>PHP伪协议总结 | xiaoZ's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><meta name="generator" content="Hexo 4.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">PHP伪协议总结</h1><a id="logo" href="/.">xiaoZ's Blog</a><p class="description">Try My Best</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> Home</i></a><a href="/archives/"><i class="fa fa-archive"> Archive</i></a><a href="/about/"><i class="fa fa-user"> About</i></a><a href="/atom.xml"><i class="fa fa-rss"> RSS</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">PHP伪协议总结</h1><div class="post-meta">Sep 21, 2019<span> | </span><span class="category"><a href="/categories/Web%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D/">Web漏洞介绍</a></span></div><a class="disqus-comment-count" data-disqus-identifier="2019/09/21/PHP伪协议总结/" href="/2019/09/21/PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE%E6%80%BB%E7%BB%93/#disqus_thread"></a><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">Contents</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#PHP-支持的伪协议"><span class="toc-number">1.</span> <span class="toc-text">PHP 支持的伪协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#php-协议"><span class="toc-number">2.</span> <span class="toc-text">php:&#x2F;&#x2F; 协议</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#php-filter"><span class="toc-number">2.1.</span> <span class="toc-text">php:&#x2F;&#x2F;filter</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#字符串过滤器"><span class="toc-number">2.1.1.</span> <span class="toc-text">字符串过滤器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#转换过滤器"><span class="toc-number">2.1.2.</span> <span class="toc-text">转换过滤器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#压缩过滤器"><span class="toc-number">2.1.3.</span> <span class="toc-text">压缩过滤器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#加密过滤器"><span class="toc-number">2.1.4.</span> <span class="toc-text">加密过滤器</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#php-input"><span class="toc-number">2.2.</span> <span class="toc-text">php:&#x2F;&#x2F;input</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#http-s-协议"><span class="toc-number">3.</span> <span class="toc-text">http(s):&#x2F;&#x2F; 协议</span></a></li></ol></div></div><div class="post-content"><p>前一篇对SSRF的总结，实际上里面也是涉及到一些协议的，这里也在自己之前学习PHP伪协议时的笔记基础上进行扩充，对PHP伪协议进行一下总结。</p>
+<h2 id="PHP-支持的伪协议">PHP 支持的伪协议</h2>
+<p>php伪协议，事实上是其支持的协议与封装协议。而其支持的协议有：</p>
+<figure class="highlight dts"><table><tr><td class="code"><pre><span class="line"><span class="symbol">php:</span><span class="comment">// — 访问各个输入/输出流（I/O streams）</span></span><br><span class="line"><span class="symbol">file:</span><span class="comment">// — 访问本地文件系统</span></span><br><span class="line"><span class="symbol">http:</span><span class="comment">// — 访问 HTTP(s) 网址</span></span><br><span class="line"><span class="symbol">ftp:</span><span class="comment">// — 访问 FTP(s) URLs</span></span><br><span class="line"><span class="symbol">zlib:</span><span class="comment">// — 压缩流</span></span><br><span class="line"><span class="symbol">data:</span><span class="comment">// — 数据（RFC 2397）</span></span><br><span class="line"><span class="symbol">glob:</span><span class="comment">// — 查找匹配的文件路径模式</span></span><br><span class="line"><span class="symbol">phar:</span><span class="comment">// — PHP 归档</span></span><br><span class="line"><span class="symbol">ssh2:</span><span class="comment">// — Secure Shell 2</span></span><br><span class="line"><span class="symbol">rar:</span><span class="comment">// — RAR</span></span><br><span class="line"><span class="symbol">ogg:</span><span class="comment">// — 音频流</span></span><br><span class="line"><span class="symbol">expect:</span><span class="comment">// — 处理交互式的流</span></span><br></pre></td></tr></table></figure>
+<h2 id="php-协议">php:// 协议</h2>
+<p>使用条件：不需要开启<code>allow_url_fopen</code>，仅<code>php://input、 php://stdin、 php://memory 和 php://temp </code>需要开启<code>allow_url_include</code>。</p>
+<p><code>php://</code>访问各个输入/输出流<code>I/O streams）</code>，在CTF中经常使用的是<code>php://filter</code>和<code>php://input</code>，<code>php://filter</code>用于读取源码，<code>php://input</code>用于执行<code>php</code>代码。</p>
+<p>下面对其进行详细介绍：</p>
+<h3 id="php-filter">php://filter</h3>
+<p><code>CTF</code>中常用的伪协议，可以用来读取文件，是一种元封装器，设计用于数据流打开时的筛选过滤应用。其中一种最典型的利用方式如下：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="code"><pre><span class="line">index.php?<span class="built_in">file</span>=php://<span class="built_in">filter</span>/<span class="built_in">read</span>=<span class="built_in">convert</span>.base64-encode/resource=index.php</span><br><span class="line"></span><br><span class="line">// 这里读的过滤器为<span class="built_in">convert</span>.base64-encode，就和字面上的意思一样，把输入流base64-encode。</span><br><span class="line">// resource=upload.php，代表读取upload.php的内容</span><br></pre></td></tr></table></figure>
+<p>上述代码意为使用<code>base64</code>编码的形式将<code>index.php</code>读取出来。对于上述利用方式具体每部分的含义，可以参照下图</p>
+<p><img src="/image/201909_phpweixieyi/1.png" alt=""></p>
+<p>在这里，涉及到一个过滤器的概念，<code>PHP</code>过滤器用于验证和过滤来自非安全来源的数据，比如用户的输入。在这里之所以可以使用过滤器读取文件，相当于是将文件作为过滤器输入，获取其经过处理之后的数据流，而在<code>PHP</code>中，过滤器有很多种，分别为：</p>
+<ul>
+<li><a href="https://www.php.net/manual/zh/filters.string.php" target="_blank" rel="noopener">字符串过滤器</a></li>
+<li><a href="https://www.php.net/manual/zh/filters.convert.php" target="_blank" rel="noopener">转换过滤器</a></li>
+<li><a href="https://www.php.net/manual/zh/filters.compression.php" target="_blank" rel="noopener">压缩过滤器</a></li>
+<li><a href="https://www.php.net/manual/zh/filters.encryption.php" target="_blank" rel="noopener">加密过滤器</a></li>
+</ul>
+<h4 id="字符串过滤器">字符串过滤器</h4>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">string</span>.rot13</span><br><span class="line"><span class="comment">// 进行rot13转换</span></span><br><span class="line"><span class="comment">// 自 PHP 4.3.0 起，使用此过滤器等同于用 str_rot13()函数处理所有的流数据。</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span>.<span class="built_in">toupper</span></span><br><span class="line"><span class="comment">// 将字符全部大写</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span>.<span class="built_in">tolower</span></span><br><span class="line"><span class="comment">// 将字符全部小写</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">string</span>.strip_tags</span><br><span class="line"><span class="comment">// 去除空字符、HTML 和 PHP 标记后的结果。</span></span><br><span class="line"><span class="comment">// 功能类似于strip_tags()函数，若不想某些字符不被消除，后面跟上字符，可利用字符串或是数组两种方式。</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例-string.rot13</li>
+</ul>
+<figure class="highlight mel"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$fp = <span class="keyword">fopen</span>(<span class="string">'php://output'</span>, <span class="string">'w'</span>);</span><br><span class="line">stream_filter_append($fp, <span class="string">'string.rot13'</span>);</span><br><span class="line"><span class="keyword">fwrite</span>($fp, <span class="string">"This is a test.\n"</span>);</span><br><span class="line">?&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Outputs:  Guvf vf n grfg.   */</span></span><br><span class="line"><span class="comment">// string.toupper（自 PHP 5.0.0 起）使用此过滤器等同于用 strtoupper()函数处理所有的流数据。</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例-string.toupper</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">$fp = fopen(<span class="string">'php://output'</span>, <span class="string">'w'</span>);</span><br><span class="line">stream_filter_append($fp, <span class="string">'string.toupper'</span>);</span><br><span class="line">fwrite($fp, <span class="string">"This is a test.\n"</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Outputs:  THIS IS A TEST.   */</span></span><br><span class="line"><span class="comment">// string.tolower（自 PHP 5.0.0 起）使用此过滤器等同于用 strtolower()函数处理所有的流数据。</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例-string.tolower</li>
+</ul>
+<figure class="highlight mel"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$fp = <span class="keyword">fopen</span>(<span class="string">'php://output'</span>, <span class="string">'w'</span>);</span><br><span class="line">stream_filter_append($fp, <span class="string">'string.tolower'</span>);</span><br><span class="line"><span class="keyword">fwrite</span>($fp, <span class="string">"This is a test.\n"</span>);</span><br><span class="line">?&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Outputs:  this is a test.   */</span></span><br></pre></td></tr></table></figure>
+<h4 id="转换过滤器">转换过滤器</h4>
+<p>如同<code>string.*</code>过滤器，<code>convert.*</code>过滤器的作用就和其名字一样。转换过滤器是<code>PHP 5.0.0 </code>添加的。</p>
+<p>以常用的<code>convert.base64-encode</code>和<code>convert.base64-decode</code>为例，使用这两个过滤器等同于分别用<code>base64_encode()</code>和<code>base64_decode()</code>函数处理所有的流数据。</p>
+<p><code>convert.base64-encode</code>支持以一个关联数组给出的参数。如果给出了<code>line-length</code>，<code>base64</code>输出将被用<code>line-length</code>个字符为 长度而截成块。如果给出了<code>line-break-chars</code>，每块将被用给出的字符隔开。这些参数的效果和用<code>base64_encode()</code>再加上<code>chunk_split()</code>相同。</p>
+<ul>
+<li>示例-convert.base64-encode &amp; convert.base64-decode</li>
+</ul>
+<figure class="highlight mel"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$fp = <span class="keyword">fopen</span>(<span class="string">'php://output'</span>, <span class="string">'w'</span>);</span><br><span class="line">stream_filter_append($fp, <span class="string">'convert.base64-encode'</span>);</span><br><span class="line"><span class="keyword">fwrite</span>($fp, <span class="string">"This is a test.\n"</span>);</span><br><span class="line"><span class="keyword">fclose</span>($fp);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Outputs:  VGhpcyBpcyBhIHRlc3QuCg==  */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$param = array(<span class="string">'line-length'</span> =&gt; <span class="number">8</span>, <span class="string">'line-break-chars'</span> =&gt; <span class="string">"\r\n"</span>);</span><br><span class="line">$fp = <span class="keyword">fopen</span>(<span class="string">'php://output'</span>, <span class="string">'w'</span>);</span><br><span class="line">stream_filter_append($fp, <span class="string">'convert.base64-encode'</span>, STREAM_FILTER_WRITE, $param);</span><br><span class="line"><span class="keyword">fwrite</span>($fp, <span class="string">"This is a test.\n"</span>);</span><br><span class="line"><span class="keyword">fclose</span>($fp);</span><br><span class="line"><span class="comment">/* Outputs:  VGhpcyBp</span></span><br><span class="line"><span class="comment">          :  cyBhIHRl</span></span><br><span class="line"><span class="comment">          :  c3QuCg==  */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$fp = <span class="keyword">fopen</span>(<span class="string">'php://output'</span>, <span class="string">'w'</span>);</span><br><span class="line">stream_filter_append($fp, <span class="string">'convert.base64-decode'</span>);</span><br><span class="line"><span class="keyword">fwrite</span>($fp, <span class="string">"VGhpcyBpcyBhIHRlc3QuCg=="</span>);</span><br><span class="line"><span class="keyword">fclose</span>($fp);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Outputs:  This is a test.  */</span></span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p>除此之外，还有<code>convert.quoted-printable-encode</code>和<code>convert.quoted-printable-decode</code>两个过滤器。</p>
+<p>使用此过滤器的<code>decode</code>等同于用<code>quoted_printable_decode()</code>函数处理所有的流数据。没有和<code>convert.quoted-printable-encode</code>对应的函数。</p>
+<p><code>convert.quoted-printable-encode</code>支持以一个关联数组给出的参数。除了支持和<code>convert.base64-encode</code>一样的附加参数外，<code>convert.quoted-printable-encode</code>还支持布尔参数<code>binary</code>和<code>force-encode-first</code>。<code>convert.base64-decode</code>只支持<code>line-break-chars</code>参数作为从编码载荷中剥离的类型提示。</p>
+<ul>
+<li>示例-convert.quoted-printable-encode &amp; convert.quoted-printable-decode</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$fp = fopen(<span class="string">'php://output'</span>, <span class="string">'w'</span>);</span></span><br><span class="line"><span class="php">stream_filter_append($fp, <span class="string">'convert.quoted-printable-encode'</span>);</span></span><br><span class="line"><span class="php">fwrite($fp, <span class="string">"This is a test.\n"</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">/* Outputs:  =This is a test.=0A  */</span></span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="压缩过滤器">压缩过滤器</h4>
+<p>正如名字所提到的，其作用也是类似，虽然在<code>PHP</code>伪协议中，有压缩封装协议<code>(zlib://, bzip2://, zip://)</code>，提供了在本地文件系统中 创建 gzip 和 bz2 兼容文件的方法，但不代表可以在网络的流中提供通用压缩的意思，也不代表可以将一个非压缩的流转换成一个压缩流。对此，压缩过滤器可以在任何时候应用于任何流资源。</p>
+<p>另外，需要注意的是，压缩过滤器不产生命令行工具如<code>gzip</code>的头和尾信息。只是压缩和解压数据流中的有效载荷部分。其中主要有<code>zlib.* , bzip2.* </code>两类压缩过滤器：</p>
+<p><code>zlib.deflate</code>（压缩）和<code>zlib.inflate</code>（解压）实现了<code>RFC 1951</code>中的的压缩算法。 <code>zlib.* </code>压缩过滤器自 <code>PHP</code> 版本 <code>5.1.0</code>起可用，在激活 <code>zlib</code>的前提下。也可以通过安装来自<code>PECL</code>的<code>zlib_filter</code>包作为一个后门在<code>5.0.x</code>版中使用。此过滤器在<code>PHP 4</code>中不可用。</p>
+<p>其中，deflate过滤器最多可以接受三个参数。分别为：</p>
+<ul>
+<li>
+<p><code>level</code> 定义了压缩强度（1-9）。数字更高通常会产生更小的载荷，但要消耗更多的处理时间。存在两个特殊压缩等级：0（完全不压缩）和 -1（zlib 内部默认值，目前是 6）。</p>
+</li>
+<li>
+<p><code>window</code> 压缩回溯窗口大小，以二的次方表示。更高的值（大到 15 —— 32768 字节）产生更好的压缩效果但消耗更多内存，低的值（低到 9 —— 512 字节）产生产生较差的压缩效果但内存消耗低。目前默认的 window大小是 15。</p>
+</li>
+<li>
+<p><code>memory</code> 用来指示要分配多少工作内存。合法的数值范围是从 1（最小分配）到 9（最大分配）。内存分配仅影响速度，不会影响生成的载荷的大小。</p>
+</li>
+</ul>
+<p>下面为该压缩过滤器的示例：</p>
+<ul>
+<li>示例-zlib.deflate和 zlib.inflate</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$params = <span class="keyword">array</span>(<span class="string">'level'</span> =&gt; <span class="number">6</span>, <span class="string">'window'</span> =&gt; <span class="number">15</span>, <span class="string">'memory'</span> =&gt; <span class="number">9</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$original_text = <span class="string">"This is a test.\nThis is only a test.\nThis is not an important string.\n"</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"The original text is "</span> . strlen($original_text) . <span class="string">" characters long.\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$fp = fopen(<span class="string">'test.deflated'</span>, <span class="string">'w'</span>);</span></span><br><span class="line"><span class="php">stream_filter_append($fp, <span class="string">'zlib.deflate'</span>, STREAM_FILTER_WRITE, $params);</span></span><br><span class="line"><span class="php">fwrite($fp, $original_text);</span></span><br><span class="line"><span class="php">fclose($fp);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"The compressed file is "</span> . filesize(<span class="string">'test.deflated'</span>) . <span class="string">" bytes long.\n"</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"The original text was:\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="comment">/* Use readfile and zlib.inflate to decompress on the fly */</span></span></span><br><span class="line"><span class="php">readfile(<span class="string">'php://filter/zlib.inflate/resource=test.deflated'</span>);</span></span><br><span class="line"></span><br><span class="line">/* Generates output:</span><br><span class="line"></span><br><span class="line">The original text is 70 characters long.</span><br><span class="line">The compressed file is 56 bytes long.</span><br><span class="line">The original text was:</span><br><span class="line">This is a test.</span><br><span class="line">This is only a test.</span><br><span class="line">This is not an important string.</span><br><span class="line"></span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例-zlib.deflate简单参数用法</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$original_text = <span class="string">"This is a test.\nThis is only a test.\nThis is not an important string.\n"</span>;</span></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"The original text is "</span> . strlen($original_text) . <span class="string">" characters long.\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$fp = fopen(<span class="string">'test.deflated'</span>, <span class="string">'w'</span>);</span></span><br><span class="line"><span class="php"><span class="comment">/* Here "6" indicates compression level 6 */</span></span></span><br><span class="line"><span class="php">stream_filter_append($fp, <span class="string">'zlib.deflate'</span>, STREAM_FILTER_WRITE, <span class="number">6</span>);</span></span><br><span class="line"><span class="php">fwrite($fp, $original_text);</span></span><br><span class="line"><span class="php">fclose($fp);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"The compressed file is "</span> . filesize(<span class="string">'test.deflated'</span>) . <span class="string">" bytes long.\n"</span>;</span></span><br><span class="line"></span><br><span class="line">/* Generates output:</span><br><span class="line"></span><br><span class="line">The original text is 70 characters long.</span><br><span class="line">The compressed file is 56 bytes long.</span><br><span class="line"></span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p><code>bzip2.compress</code>和<code>bzip2.decompress</code>工作的方式与上面讲的<code>zlib.*</code>过滤器相同。 自<code>PHP 5.1.0</code>起可用，在激活 <code>bz2</code>支持的前提下。也可以通过安装来自<code>PECL</code>的<code>bz2_filter</code>包作为一个后门在<code>5.0.x</code>版中使用。此过滤器在<code>PHP 4</code>中 不可用。</p>
+<p><code>bzip2.compress</code>过滤器接受最多两个参数：</p>
+<ul>
+<li><code>blocks</code> 从 1 到 9 的整数值，指定分配多少个 100K 字节的内存块作为工作区。</li>
+<li><code>work</code>  0 到 250 的整数值，指定在退回到一个慢一些，但更可靠的算法之前做多少次常规压缩算法的尝试。调整此参数仅影响到速度，压缩输出和内存使用都不受此设置的影响。将此参数设为 0 指示 bzip 库使用内部默认算法。</li>
+</ul>
+<p><code>bzip2.decompress</code>过滤器仅接受一个参数，可以用普通的布尔值传递，或者用一个关联数组中的<code>small</code>单元传递。当<code>small</code>设为<code>&amp;true</code>; 值时，指示<code>bzip</code>库用最小的内存占用来执行解压缩，代价是速度会慢一些。</p>
+<p>下面为其使用示例：</p>
+<ul>
+<li>示例-bzip2.compress和 bzip2.decompress</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$param = <span class="keyword">array</span>(<span class="string">'blocks'</span> =&gt; <span class="number">9</span>, <span class="string">'work'</span> =&gt; <span class="number">0</span>);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"The original file is "</span> . filesize(<span class="string">'LICENSE'</span>) . <span class="string">" bytes long.\n"</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="php">$fp = fopen(<span class="string">'LICENSE.compressed'</span>, <span class="string">'w'</span>);</span></span><br><span class="line"><span class="php">stream_filter_append($fp, <span class="string">'bzip2.compress'</span>, STREAM_FILTER_WRITE, $param);</span></span><br><span class="line"><span class="php">fwrite($fp, file_get_contents(<span class="string">'LICENSE'</span>));</span></span><br><span class="line"><span class="php">fclose($fp);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">echo</span> <span class="string">"The compressed file is "</span> . filesize(<span class="string">'LICENSE.compressed'</span>) . <span class="string">" bytes long.\n"</span>;</span></span><br><span class="line"></span><br><span class="line">/* Generates output:</span><br><span class="line"></span><br><span class="line">The original text is 3288 characters long.</span><br><span class="line">The compressed file is 1488 bytes long.</span><br><span class="line"></span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="加密过滤器">加密过滤器</h4>
+<p>加密过滤器为<code>mcrypt.*</code>和<code>mdecrypt.*</code>，使用<code>libmcrypt</code>提供了对称的加密和解密。这两组过滤器都支持<code>mcrypt</code>扩展库中相同的算法，格式为<code>mcrypt.ciphername</code>，其中<code>ciphername</code>是密码的名字，将被传递给<code>mcrypt_module_open()</code>。有以下五个过滤器参数可用：</p>
+<p><img src="/image/201909_phpweixieyi/2.png" alt=""></p>
+<ul>
+<li>示例-用 3DES 将文件加密输出</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$passphrase = <span class="string">'My secret'</span>;</span></span><br><span class="line"></span><br><span class="line">/* Turn a human readable passphrase</span><br><span class="line"> * into a reproducable iv/key pair</span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php">$iv = substr(md5(<span class="string">'iv'</span>.$passphrase, <span class="keyword">true</span>), <span class="number">0</span>, <span class="number">8</span>);</span></span><br><span class="line"><span class="php">$key = substr(md5(<span class="string">'pass1'</span>.$passphrase, <span class="keyword">true</span>) .</span></span><br><span class="line"><span class="php">               md5(<span class="string">'pass2'</span>.$passphrase, <span class="keyword">true</span>), <span class="number">0</span>, <span class="number">24</span>);</span></span><br><span class="line"><span class="php">$opts = <span class="keyword">array</span>(<span class="string">'iv'</span>=&gt;$iv, <span class="string">'key'</span>=&gt;$key);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$fp = fopen(<span class="string">'secert-file.enc'</span>, <span class="string">'wb'</span>);</span></span><br><span class="line"><span class="php">stream_filter_append($fp, <span class="string">'mcrypt.tripledes'</span>, STREAM_FILTER_WRITE, $opts);</span></span><br><span class="line"><span class="php">fwrite($fp, <span class="string">'Secret secret secret data'</span>);</span></span><br><span class="line"><span class="php">fclose($fp);</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例-读取加密的文件</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="php"><span class="meta">&lt;?php</span></span></span><br><span class="line"><span class="php">$passphrase = <span class="string">'My secret'</span>;</span></span><br><span class="line"></span><br><span class="line">/* Turn a human readable passphrase</span><br><span class="line"> * into a reproducable iv/key pair</span><br><span class="line"><span class="php"> */</span></span><br><span class="line"><span class="php">$iv = substr(md5(<span class="string">'iv'</span>.$passphrase, <span class="keyword">true</span>), <span class="number">0</span>, <span class="number">8</span>);</span></span><br><span class="line"><span class="php">$key = substr(md5(<span class="string">'pass1'</span>.$passphrase, <span class="keyword">true</span>) .</span></span><br><span class="line"><span class="php">               md5(<span class="string">'pass2'</span>.$passphrase, <span class="keyword">true</span>), <span class="number">0</span>, <span class="number">24</span>);</span></span><br><span class="line"><span class="php">$opts = <span class="keyword">array</span>(<span class="string">'iv'</span>=&gt;$iv, <span class="string">'key'</span>=&gt;$key);</span></span><br><span class="line"></span><br><span class="line"><span class="php">$fp = fopen(<span class="string">'secert-file.enc'</span>, <span class="string">'rb'</span>);</span></span><br><span class="line"><span class="php">stream_filter_append($fp, <span class="string">'mdecrypt.tripledes'</span>, STREAM_FILTER_WRITE, $opts);</span></span><br><span class="line"><span class="php">$data = rtrim(stream_get_contents($fp));</span></span><br><span class="line"><span class="php">fclose($fp);</span></span><br><span class="line"></span><br><span class="line"><span class="php"><span class="keyword">echo</span> $data;</span></span><br><span class="line"><span class="php"><span class="meta">?&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="php-input">php://input</h3>
+<p>php://input是个可以访问请求的原始数据的只读流，将post请求中的数据作为PHP代码执行。当传进去的参数作为文件名变量去打开文件时，可以将参数php://input，同时post方式传进去值作为文件内容，供php代码执行时当做文件内容读取</p>
+<p>利用条件：</p>
+<figure class="highlight ini"><table><tr><td class="code"><pre><span class="line"><span class="attr">allow_url_include</span> = <span class="literal">On</span></span><br><span class="line"><span class="attr">allow_url_fopen</span> = <span class="literal">On</span>/<span class="literal">Off</span></span><br></pre></td></tr></table></figure>
+<p>利用姿势：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">index.php?file=php:<span class="comment">//input</span></span><br><span class="line"></span><br><span class="line">POST:</span><br><span class="line">&lt;?php phpinfo();?&gt;<span class="regexp">/&lt;? phpinfo();?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>需要注意的是，在<code>PHP 5.6</code>之前<code>php://input</code>打开的数据流只能读取一次； 数据流不支持<code>seek</code>操作。 不过，依赖于<code>SAPI</code>的实现，请求体数据被保存的时候， 它可以打开另一个<code>php://input</code>数据流并重新读取。 通常情况下，这种情况只是针对 POST 请求，而不是其他请求方式，比如<code>PUT</code>或者<code>PROPFIND</code>。</p>
+<p>在<code>php://</code>伪协议中，除了上述两种在<code>CTF</code>中常用的之外，还有一些其他的，比如下面这些：</p>
+<ul>
+<li>php://output 一个只写的数据流， 允许以<code>print</code>和<code>echo</code>一样的方式 写入到输出缓冲区。</li>
+<li>php://fd 允许直接访问指定的文件描述符。 例如<code>php://fd/3</code>引用了文件描述符<code>3</code>。</li>
+<li>php://memory/php://temp 一个类似文件包装器的数据流，允许读写临时数据。</li>
+<li>php://stdin/php://stdout/php://stderr 允许直接访问 PHP 进程相应的输入或者输出流</li>
+</ul>
+<h2 id="http-s-协议">http(s):// 协议</h2>
+<p>用以访问<code>HTTP(s)</code>网址，允许通过<code>HTTP 1.0</code>的<code>GET</code>方法，以只读访问文件或资源。 <code>HTTP</code>请求会附带一个<code>Host: </code>头，用于兼容基于域名的虚拟主机。 如果在<code>php.ini</code>文件中或字节流上下文<code>（context）</code>配置了<code>user_agent</code>字符串，它也会被包含在请求之中。使用需要满足以下条件：</p>
+<figure class="highlight applescript"><table><tr><td class="code"><pre><span class="line">allow_url_fopen:<span class="keyword">on</span></span><br><span class="line">allow_url_include :<span class="keyword">on</span></span><br></pre></td></tr></table></figure>
+<p>用法：</p>
+<figure class="highlight dts"><table><tr><td class="code"><pre><span class="line"><span class="symbol">http:</span><span class="comment">//example.com</span></span><br><span class="line"><span class="symbol">http:</span><span class="comment">//example.com/file.php?var1=val1&amp;var2=val2</span></span><br><span class="line"><span class="symbol">http:</span><span class="comment">//user:password@example.com</span></span><br><span class="line"><span class="symbol">https:</span><span class="comment">//example.com</span></span><br><span class="line"><span class="symbol">https:</span><span class="comment">//example.com/file.php?var1=val1&amp;var2=val2</span></span><br><span class="line"><span class="symbol">https:</span><span class="comment">//user:password@example.com</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例-检测重定向后最终的 URL</li>
+</ul>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"><span class="title">$url = 'http:</span>//www.example.com/redirecting_page.php'<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">$fp = fopen($url, 'r')<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">$met<span class="built_in">a_data</span> = stream_get_met<span class="built_in">a_data</span>($fp)<span class="comment">;</span></span><br><span class="line">foreach ($met<span class="built_in">a_data</span>['wrapper_data'] as $response) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 我们是否被重定向了？ */</span></span><br><span class="line"><span class="title">    if (strtolower(substr($response, 0, 10)) == 'location:</span> ') &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* 更新我们被重定向后的 $url */</span></span><br><span class="line">        $url = substr($response, <span class="number">10</span>)<span class="comment">;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"><span class="title">## ftp(s):</span>// 协议</span><br><span class="line"></span><br><span class="line">用以访问`FTP(s) URLs`，允许通过`FTP`读取存在的文件，以及创建新文件。 如果服务器不支持被动`（passive）`模式的`FTP`，连接会失败。</span><br><span class="line"></span><br><span class="line">打开文件后你既可以读也可以写，但是不能同时进行。 当远程文件已经存在于`ftp`服务器上，如果尝试打开并写入文件的时候， 未指定上下文`（context）`选项`overwrite`，连接会失败。 如果要通过`FTP`覆盖存在的文件， 指定上下文`（context）`的`overwrite`选项来打开、写入。 另外可使用`FTP`扩展来代替。</span><br><span class="line"></span><br><span class="line">需要注意的是：如果设置了`php.ini`中的`from`指令，这个值会作为匿名`（anonymous）ftp`的密码。</span><br><span class="line"></span><br><span class="line"><span class="title">## zlib:// &amp; bzip2:// &amp; zip:</span>/ 协议</span><br><span class="line"></span><br><span class="line">`php`伪协议中的压缩流，可以访问压缩文件中的子文件，更重要的是不需要指定后缀名，可修改为任意后缀`(jpg png gif xxx)`等等。其使用条件为：</span><br></pre></td></tr></table></figure>
+<p>allow_url_fopen:off/on<br>
+allow_url_include :off/on</p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="title">- 示例-使用`zip:</span>//`压缩`phpinfo.txt`为`phpinfo.zip` ，压缩包重命名为`phpinfo.jpg` ，并上传</span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=zip://home/test/WWW/phpinfo.jpg%23phpinfo.txt" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=zip://home/test/WWW/phpinfo.jpg%23phpinfo.txt</a></p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="title">- 示例-使用`compress.bzip2:</span>//file.bz2`压缩`phpinfo.txt`为`phpinfo.bz2`并上传（同样支持任意后缀名）</span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=compress.bzip2://home/test/WWW/phpinfo.bz2" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=compress.bzip2://home/test/WWW/phpinfo.bz2</a></p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="title">- 示例-使用`compress.zlib:</span>//file.gz`压缩`phpinfo.txt`为`phpinfo.gz`并上传（同样支持任意后缀名）</span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=compress.zlib://home/test/WWW/phpinfo.gz" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=compress.zlib://home/test/WWW/phpinfo.gz</a></p>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">## data:<span class="comment">// 协议</span></span><br><span class="line"></span><br><span class="line">自`PHP&gt;=<span class="number">5.2</span><span class="number">.0</span>`起，可以使用`data:<span class="comment">//`数据流封装器，以传递相应格式的数据。通常可以用来执行`PHP`代码。使用条件为：</span></span><br></pre></td></tr></table></figure>
+<p>allow_url_fopen:on<br>
+allow_url_include :on</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">可以支持明文或编码，用法为：</span><br></pre></td></tr></table></figure>
+<p>data://text/plain,XXX<br>
+data://text/plain;base64,XXX</p>
+<p>格式为：<br>
+data://资源类型;编码,内容</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="bullet">- </span>示例-使用明文方式读取<span class="code">`phpinfo()`</span></span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=data://text/plain" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=data://text/plain</a>,<?php%20phpinfo();?></p>
+<figure class="highlight arcade"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">![](<span class="regexp">/image/</span><span class="number">201909</span>_phpweixieyi/<span class="number">3.</span>png)</span><br><span class="line"></span><br><span class="line">- 示例-使用<span class="string">`base64`</span>方式（CTF中可用以绕过waf）读取<span class="string">`phpinfo()`</span></span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2b" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=data://text/plain;base64,PD9waHAgcGhwaW5mbygpOz8%2B</a></p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="bullet">- </span>示例-打印<span class="code">`data://`</span>的内容</span><br></pre></td></tr></table></figure>
+<?php
+// 打印 "I love PHP"
+echo file_get_contents('data://text/plain;base64,SSBsb3ZlIFBIUAo=');
+?>
+<figure class="highlight angelscript"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">## glob:<span class="comment">// 协议</span></span><br><span class="line"></span><br><span class="line">查找匹配的文件路径模式, 自`PHP <span class="number">5.3</span><span class="number">.0</span>`起开始有效。下面为其基本用法：</span><br></pre></td></tr></table></figure>
+<?php
+// 循环 ext/spl/examples/ 目录里所有 *.php 文件
+// 并打印文件名和文件尺寸
+$it = new DirectoryIterator("glob://ext/spl/examples/*.php");
+foreach($it as $f) {
+    printf("%s: %.1FK\n", $f->getFilename(), $f->getSize()/1024);
+}
+?>
+<p>output:</p>
+<p>tree.php: 1.0K<br>
+findregex.php: 0.6K<br>
+findfile.php: 0.7K<br>
+dba_dump.php: 0.9K<br>
+nocvsdir.php: 1.1K<br>
+phar_from_dir.php: 1.0K<br>
+ini_groups.php: 0.9K<br>
+directorytree.php: 0.9K<br>
+dba_array.php: 1.1K<br>
+class_tree.php: 1.8K</p>
+<figure class="highlight d"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">## phar:<span class="comment">// 协议</span></span><br><span class="line"></span><br><span class="line">用以<span class="string">`PHP归档`</span>，数据流包装器自<span class="string">`PHP 5.3.0`</span>起开始有效，与<span class="string">`zip://`</span>类似，同样可以访问<span class="string">`zip`</span>格式压缩包内容，比如下面这个例子：</span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=phar://home/test/WWW/phpinfo.zip/phpinfo.txt" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=phar://home/test/WWW/phpinfo.zip/phpinfo.txt</a></p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">该伪协议在`CTF`中比较常见，主要用于反序列化和文件包含，此文中只对其用于文件包含进行介绍，反序列化在后面将会单独拿出来讲。在文件包含中，该协议主要用于支持`zip、phar`格式的文件包含，用法如下：</span><br></pre></td></tr></table></figure>
+<p>?file=phar://[压缩包文件相对路径]/[压缩文件内的子文件名]<br>
+?file=phar://[压缩包文件绝对路径]/[压缩文件内的子文件名]</p>
+<figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="bullet">- </span>示例-配合文件上传漏洞，当仅可以上传zip格式时</span><br></pre></td></tr></table></figure>
+<p>index.php?file=phar://index.zip/index.txt</p>
+<p>index.php?file=phar://home/test/WWW/FI/index.zip/index.txt</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="bullet">- </span>示例-配合文件上传漏洞，当仅可以上传图片格式时，<span class="code">`phar://`</span>不管后缀是什么，都会当做压缩包来解压。</span><br></pre></td></tr></table></figure>
+<p>index.php?file=phar://head.png/head.txt</p>
+<p>index.php?file=phar://home/test/WWW/FI/head.png/head.txt</p>
+<figure class="highlight clean"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">## file:<span class="comment">// 协议</span></span><br><span class="line"></span><br><span class="line">用于访问本地文件系统，可以使用相对路径或绝对路径来访问文件系统文件，其使用样例为：</span><br></pre></td></tr></table></figure>
+<p>/path/to/file.ext<br>
+relative/path/to/file.ext<br>
+fileInCwd.ext<br>
+C:/path/to/winfile.ext<br>
+C:\path\to\winfile.ext<br>
+\smbserver\share\path\to\winfile.ext<br>
+file:///path/to/file.ext</p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">该伪协议在CTF中通常用来读取本地文件，因为其在双`off`的情况下也可以正常使用，不受`allow_url_fopen`与`allow_url_include`的影响。</span><br><span class="line"></span><br><span class="line">- 示例-使用文件的相对路径和文件名</span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=./phpinfo.txt" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=./phpinfo.txt</a></p>
+<figure class="highlight asciidoc"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="bullet">- </span>示例-使用文件的绝对路径和文件名</span><br></pre></td></tr></table></figure>
+<p><a href="http://127.0.0.1/include.php?file=file://home/test/WWW/phpinfo.txt" target="_blank" rel="noopener">http://127.0.0.1/include.php?file=file://home/test/WWW/phpinfo.txt</a></p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="title">## ssh2:</span>// 协议</span><br><span class="line"></span><br><span class="line">`Secure Shell <span class="number">2</span>`，主要形式有`ssh2.shell:// ssh2.exec:// ssh2.tunnel:// ssh2.sftp:// ssh2.scp://`默认没有激活，如果需要使用`ssh2.*://`封装协议，必须安装来自`PECL`的`SSH2`扩展</span><br><span class="line"></span><br><span class="line">该伪协议除了支持传统的`URI`登录信息，`ssh2`封装协议也支持通过`URL`的主机`（host）`部分来复用打开连接，用法如下所示：</span><br></pre></td></tr></table></figure>
+<p>ssh2.shell://user:pass@example.com:22/xterm<br>
+ssh2.exec://user:pass@example.com:22/usr/local/bin/somecmd<br>
+ssh2.tunnel://user:pass@example.com:22/192.168.0.1:14<br>
+ssh2.sftp://user:pass@example.com:22/path/to/filename</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">下面为一个示例，用以从一个活动连接中打开字节流：</span><br></pre></td></tr></table></figure>
+<?php
+$session = ssh2_connect('example.com', 22);
+ssh2_auth_pubkey_file($session, 'username', '/home/username/.ssh/id_rsa.pub',
+                                            '/home/username/.ssh/id_rsa', 'secret');
+$stream = fopen("ssh2.tunnel://$session/remote.example.com:1234", 'r');
+?>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="title">## ogg:</span>// 协议</span><br><span class="line"></span><br><span class="line">音频流协议，用以读取`OGG/Vorbis`格式的压缩音频编码，并能通过该伪协议写入或追加压缩音频数据，默认未激活，使用需要安装`PECL`中的`OGG/Vorbis`扩展。用法如下：</span><br></pre></td></tr></table></figure>
+<p>ogg://soundfile.ogg<br>
+ogg:///path/to/soundfile.ogg<br>
+ogg://http://www.example.com/path/to/soundstream.ogg</p>
+<figure class="highlight autohotkey"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="title">## expect:</span>// 协议</span><br><span class="line"></span><br><span class="line"><span class="title">用以处理交互式的流，由`expect:</span>//`封装协议打开的数据流`PTY`提供了对进程`stdio`、`stdout`和`stderr`的访问，默认未开启，使用须安装`PECL`上的`Expect`扩展。用法如下：</span><br></pre></td></tr></table></figure>
+<p>expect://command</p>
+<pre><code>
+## 参考资料
+
+[PHP 支持和封装的协议](https://www.php.net/manual/zh/wrappers.php)
+[php:// 官方文档](https://www.php.net/manual/zh/wrappers.php.php)
+[PHP 可用过滤器列表](https://www.php.net/manual/zh/filters.php)
+
+## 扩展阅读
+[php伪协议实现命令执行的七种姿势](https://www.freebuf.com/column/148886.html)
+[PHP文件包含漏洞利用思路与Bypass总结](https://www.freebuf.com/articles/network/235054.html)
+[利用 phar 拓展 php 反序列化漏洞攻击面](https://paper.seebug.org/680/)
+</code></pre>
+</div><div class="tags"><a href="/tags/Web%E6%BC%8F%E6%B4%9E/">Web漏洞</a><a href="/tags/CTF/">CTF</a><a href="/tags/PHP/">PHP</a></div><div class="post-nav"><a class="pre" href="/2019/09/23/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93(%E4%B8%80)-%E5%B0%8F%E7%99%BD%E6%96%87/">PHP反序列化总结(一)-小白文</a><a class="next" href="/2019/09/20/xctf-oj-web-wtf-sh/">xctf_oj_web_wtf.sh</a></div><div id="disqus_thread"><div class="btn_click_load"><button class="disqus_click_btn">阅读评论（请确保 Disqus 可以正常加载）</button></div><script type="text/javascript">var disqus_config = function () {
+    this.page.url = 'http://www.xiaozzz.xyz/2019/09/21/PHP伪协议总结/';
+    this.page.identifier = '2019/09/21/PHP伪协议总结/';
+    this.page.title = 'PHP伪协议总结';
+  };</script><script type="text/javascript" id="disqus-lazy-load-script">$.ajax({
+url: 'https://disqus.com/next/config.json',
+timeout: 2500,
+type: 'GET',
+success: function(){
+  var d = document;
+  var s = d.createElement('script');
+  s.src = '//xiaoZz.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', + new Date());
+  (d.head || d.body).appendChild(s);
+  $('.disqus_click_btn').css('display', 'none');
+},
+error: function() {
+  $('.disqus_click_btn').css('display', 'block');
+}
+});</script><script type="text/javascript" id="disqus-click-load">$('.btn_click_load').click(() => {  //click to load comments
+    (() => { // DON'T EDIT BELOW THIS LINE
+        var d = document;
+        var s = d.createElement('script');
+        s.src = '//xiaoZz.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    $('.disqus_click_btn').css('display','none');
+});</script><script type="text/javascript" id="disqus-count-script">$(function() {
+     var xhr = new XMLHttpRequest();
+     xhr.open('GET', '//disqus.com/next/config.json', true);
+     xhr.timeout = 2500;
+     xhr.onreadystatechange = function () {
+       if (xhr.readyState === 4 && xhr.status === 200) {
+         $('.post-meta .post-comments-count').show();
+         var s = document.createElement('script');
+         s.id = 'dsq-count-scr';
+         s.src = 'https://xiaoZz.disqus.com/count.js';
+         s.async = true;
+         (document.head || document.body).appendChild(s);
+       }
+     };
+     xhr.ontimeout = function () { xhr.abort(); };
+     xhr.send(null);
+   });
+</script></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> Categories</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/CTF-writeup/">CTF_writeup</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Web%E6%BC%8F%E6%B4%9E%E4%BB%8B%E7%BB%8D/">Web漏洞介绍</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/">密码学</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BC%96%E7%A0%81%E4%B8%8E%E5%BC%80%E5%8F%91/">编码与开发</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> Tags</i></div><div class="tagcloud"><a href="/tags/Web%E6%BC%8F%E6%B4%9E/" style="font-size: 15px;">Web漏洞</a> <a href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" style="font-size: 15px;">反序列化</a> <a href="/tags/CTF/" style="font-size: 15px;">CTF</a> <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" style="font-size: 15px;">密码学</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E7%90%86%E8%AE%BA/" style="font-size: 15px;">网络安全理论</a> <a href="/tags/%E5%93%88%E5%B8%8C%E5%87%BD%E6%95%B0/" style="font-size: 15px;">哈希函数</a> <a href="/tags/SSRF/" style="font-size: 15px;">SSRF</a> <a href="/tags/writeup/" style="font-size: 15px;">writeup</a> <a href="/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%93%8D%E4%BD%9C/" style="font-size: 15px;">字符串操作</a> <a href="/tags/%E5%BC%80%E5%8F%91/" style="font-size: 15px;">开发</a> <a href="/tags/Web/" style="font-size: 15px;">Web</a> <a href="/tags/PHP/" style="font-size: 15px;">PHP</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> Recent</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/08/28/%E9%A6%96%E5%B1%8A%E9%92%93%E9%B1%BC%E5%9F%8E%E6%9D%AF%E9%83%A8%E5%88%86wp/">首届钓鱼城杯部分wp</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/26/HTTP-Smuggling-%E8%AF%B7%E6%B1%82%E8%B5%B0%E7%A7%81/">HTTP_Smuggling-请求走私</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/22/Defcon-CTF-Qual-2020-Web-WP/">Defcon_CTF_Qual_2020-Web-WP</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/05/13/%E7%BD%91%E9%BC%8E%E6%9D%AF2020-%E9%9D%92%E9%BE%99%E7%BB%84-%E9%83%A8%E5%88%86WP/">网鼎杯2020-青龙组-部分WP</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/12/22/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E5%AF%86%E7%A0%81%E7%A1%AC%E4%BB%B6%E5%AE%89%E5%85%A8/">密码学学习-密码硬件安全</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/25/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E5%88%86%E7%BB%84%E5%AF%86%E7%A0%81/">密码学学习-分组密码</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/20/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-MAC%E4%B8%8EAEAD/">密码学学习-MAC与AEAD</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/17/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%9F%BA%E7%A1%80/">正则表达式基础</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/16/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6%E4%B8%8EPKI/">密码学学习-数字证书与PKI</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/10/12/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AD%A6%E4%B9%A0-%E5%AF%86%E7%A0%81%E6%9D%82%E5%87%91%E5%87%BD%E6%95%B0/">密码学学习-密码杂凑函数</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-comment-o"> Recent Comments</i></div><script type="text/javascript" src="//xiaoZz.disqus.com/recent_comments_widget.js?num_items=5&amp;hide_avatars=1&amp;avatar_size=32&amp;excerpt_length=20&amp;hide_mods=1"></script></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> Links</i></div><ul></ul><a href="https://momomoxiaoxi.com/" title="moxiaoxi" target="_blank">moxiaoxi</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">xiaoZ's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" color="100,100,100" opacity="0.5" zIndex="-2" count="50" src="//cdn.bootcss.com/canvas-nest.js/1.0.1/canvas-nest.min.js"></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
