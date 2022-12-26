@@ -152,7 +152,7 @@
 <figure class="highlight taggerscript"><table><tr><td class="code"><pre><span class="line">GetPOST / HTTP/1.1<span class="symbol">\r</span><span class="symbol">\n</span></span><br><span class="line">Content-Type: application/x-www-form-urlencoded<span class="symbol">\r</span><span class="symbol">\n</span></span><br><span class="line">Content-Length: 15<span class="symbol">\r</span><span class="symbol">\n</span></span><br><span class="line"><span class="symbol">\r</span><span class="symbol">\n</span></span><br><span class="line">x=1<span class="symbol">\r</span><span class="symbol">\n</span></span><br><span class="line">0<span class="symbol">\r</span><span class="symbol">\n</span></span><br><span class="line"><span class="symbol">\r</span><span class="symbol">\n</span></span><br></pre></td></tr></table></figure>
 <h2 id="利用与防御">利用与防御</h2>
 <p>关于上述所说的一些场景，<a href="https://portswigger.net/web-security/request-smuggling/exploiting" target="_blank" rel="noopener">PortSwigger</a>中有一些具体的实验，可以进行尝试从而加深理解，而在现实应用中，请求走私攻击又可能会导致怎么样的后果呢？</p>
-<p>有一个现成的例子就是在<code>Defcon CTF 2020 Qual</code>中的<code>uploooadit</code>一题，有兴趣的可以<a href="https://www.xiaozzz.xyz/2020/05/22/Defcon-CTF-Qual-2020-Web-WP/#uploooadit" target="_blank" rel="noopener">尝试复现</a>。另外，<code>PortSwigger</code>也对其现实危害进行了归纳：</p>
+<p>有一个现成的例子就是在<code>Defcon CTF 2020 Qual</code>中的<code>uploooadit</code>一题，有兴趣的可以<a href="https://www.xiaozblog.top/2020/05/22/Defcon-CTF-Qual-2020-Web-WP/#uploooadit">尝试复现</a>。另外，<code>PortSwigger</code>也对其现实危害进行了归纳：</p>
 <ul>
 <li>绕过前置服务器的安全限制</li>
 <li>获取前置服务器修改过的请求字段</li>
